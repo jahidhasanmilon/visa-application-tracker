@@ -14,9 +14,9 @@ export default function Toolbar({
   search, setSearch, statusFilter, setStatusFilter, onAdd,
 }: ToolbarProps) {
   return (
-    <div className="vt-toolbar">
-      <div className="vt-search">
-        <Search size={16} color="#5B6472" />
+    <div className="app-toolbar">
+      <div className="app-input-wrap">
+        <Search size={16} />
         <input
           placeholder="Search by name, email, or serial no."
           value={search}
@@ -24,14 +24,15 @@ export default function Toolbar({
         />
       </div>
       <select
-        className="vt-select"
+        className="app-select"
+        style={{ width: 'auto' }}
         value={statusFilter}
         onChange={e => setStatusFilter(e.target.value as StatusOption | 'All')}
       >
         <option value="All">All statuses</option>
         {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
       </select>
-      <button className="vt-btn" onClick={onAdd}><Plus size={16} /> Add applicant</button>
+      <button className="app-btn app-btn-accent" onClick={onAdd}><Plus size={16} /> Add applicant</button>
     </div>
   );
 }

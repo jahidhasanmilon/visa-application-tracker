@@ -7,14 +7,18 @@ interface StatusChartProps {
 }
 
 export default function StatusChart({ pieData }: StatusChartProps) {
-  if (pieData.length === 0) return null;
+  const total = pieData.reduce((sum, d) => sum + d.value, 0);
+
+  if (pieData.length === 0) {
+    return <div className="app-empty">No applications yet.</div>;
+  }
 
   return (
-    <div className="vt-panel" style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-      <div style={{ width: 180, height: 180 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
+      <div style={{ width: 168, height: 168, position: 'relative', flexShrink: 0 }}>
         <ResponsiveContainer>
           <PieChart>
-            <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={75} paddingAngle={2}>
+            <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={54} outerRadius={80} paddingAngle={3} stroke="none">
               {pieData.map((d, i) => (
                 <Cell key={i} fill={STATUS_META[d.name]?.color || '#999'} />
               ))}
@@ -22,13 +26,17 @@ export default function StatusChart({ pieData }: StatusChartProps) {
             <Tooltip />
           </PieChart>
         </ResponsiveContainer>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+          <div className="app-brand-font" style={{ fontWeight: 700, fontSize: 24 }}>{total}</div>
+          <div style={{ fontSize: 10.5, color: 'var(--muted)' }}>total</div>
+        </div>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minWidth: 140 }}>
         {pieData.map(d => (
-          <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: STATUS_META[d.name]?.color, display: 'inline-block' }} />
-            <span style={{ fontWeight: 600 }}>{d.name}</span>
-            <span style={{ color: 'var(--slate)' }}>— {d.value}</span>
+          <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13 }}>
+            <span className="app-dot" style={{ background: STATUS_META[d.name]?.color }} />
+            <span style={{ fontWeight: 600, flex: 1 }}>{d.name}</span>
+            <span style={{ color: 'var(--muted)' }}>{d.value}</span>
           </div>
         ))}
       </div>

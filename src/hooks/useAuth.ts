@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '../firebase';
+import { roleForEmail, type AppRole } from '../constants/roles';
 
-export function useAuth(): { user: User | null; authLoading: boolean } {
+export function useAuth(): { user: User | null; role: AppRole | null; authLoading: boolean } {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
@@ -14,5 +15,5 @@ export function useAuth(): { user: User | null; authLoading: boolean } {
     return unsubscribe;
   }, []);
 
-  return { user, authLoading };
+  return { user, role: user ? roleForEmail(user.email) : null, authLoading };
 }

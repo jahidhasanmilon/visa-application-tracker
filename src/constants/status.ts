@@ -14,9 +14,9 @@ interface StatusMeta {
 }
 
 export const STATUS_META: Record<StatusOption, StatusMeta> = {
-  'Applied':      { icon: FileText,     color: '#5B6472', bg: '#EEECE6' },
-  'Submitted':    { icon: Send,         color: '#2F6F62', bg: '#E4EFEA' },
-  'Under Review': { icon: Clock,        color: '#C9A227', bg: '#FBF3DC' },
-  'Approved':     { icon: CheckCircle2, color: '#2F6F62', bg: '#DCEEE6' },
-  'Rejected':     { icon: XCircle,      color: '#C1440E', bg: '#F7E4DB' },
+  'Applied':      { icon: FileText,     color: '#8B899E', bg: '#ECEBF2' },
+  'Submitted':    { icon: Send,         color: '#3E7BFA', bg: '#E4ECFE' },
+  'Under Review': { icon: Clock,        color: '#F5A524', bg: '#FDF0DA' },
+  'Approved':     { icon: CheckCircle2, color: '#12B76A', bg: '#DFF7EB' },
+  'Rejected':     { icon: XCircle,      color: '#F04438', bg: '#FCE7E5' },
 };

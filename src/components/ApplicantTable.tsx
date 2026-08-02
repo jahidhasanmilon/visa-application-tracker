@@ -14,12 +14,12 @@ export default function ApplicantTable({
   applicants, onEdit, onDelete, confirmDeleteId, onAskDelete, onCancelDelete,
 }: ApplicantTableProps) {
   if (applicants.length === 0) {
-    return <div className="vt-empty">No applicants match your filters.</div>;
+    return <div className="app-empty">No applicants match your filters.</div>;
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table className="vt-table">
+    <div className="app-table-wrap">
+      <table className="app-table">
         <thead>
           <tr>
             <th>Serial No</th>

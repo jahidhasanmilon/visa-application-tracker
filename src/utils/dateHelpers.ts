@@ -18,10 +18,10 @@ export function fmtDate(d?: string): string {
 }
 
 export function urgency(remaining: number): { label: string; color: string } {
-  if (remaining <= 0) return { label: 'Overdue', color: '#C1440E' };
-  if (remaining <= 30) return { label: 'Urgent', color: '#C1440E' };
-  if (remaining <= 90) return { label: 'Soon', color: '#C9A227' };
-  return { label: 'On track', color: '#2F6F62' };
+  if (remaining <= 0) return { label: 'Overdue', color: '#F04438' };
+  if (remaining <= 30) return { label: 'Urgent', color: '#F04438' };
+  if (remaining <= 90) return { label: 'Soon', color: '#F5A524' };
+  return { label: 'On track', color: '#12B76A' };
 }
 
 // Extracts the trailing numeric part of a serial no (e.g. "AP/260/.../000000525" -> 525)

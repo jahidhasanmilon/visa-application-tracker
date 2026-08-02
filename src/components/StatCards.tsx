@@ -1,3 +1,4 @@
+import { Users, AlarmClock, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import type { StatCounts } from '../types';
 
 interface StatCardsProps {
@@ -5,24 +6,26 @@ interface StatCardsProps {
 }
 
 export default function StatCards({ stats }: StatCardsProps) {
+  const cards = [
+    { label: 'Total applicants', value: stats.total, icon: Users, color: 'var(--violet)', bg: 'var(--violet-soft)' },
+    { label: 'Due within 30 days', value: stats.urgent, icon: AlarmClock, color: '#B77A00', bg: 'var(--warning-soft)' },
+    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: 'var(--danger)', bg: 'var(--danger-soft)' },
+    { label: 'Approved', value: stats.approved, icon: CheckCircle2, color: 'var(--success)', bg: 'var(--success-soft)' },
+  ];
+
   return (
-    <div className="vt-stats">
-      <div className="vt-stat-card">
-        <div className="vt-stat-num">{stats.total}</div>
-        <div className="vt-stat-label">Total applicants</div>
-      </div>
-      <div className="vt-stat-card">
-        <div className="vt-stat-num" style={{ color: 'var(--gold)' }}>{stats.urgent}</div>
-        <div className="vt-stat-label">Due within 30 days</div>
-      </div>
-      <div className="vt-stat-card">
-        <div className="vt-stat-num" style={{ color: 'var(--rust)' }}>{stats.overdue}</div>
-        <div className="vt-stat-label">Overdue</div>
-      </div>
-      <div className="vt-stat-card">
-        <div className="vt-stat-num" style={{ color: 'var(--teal)' }}>{stats.approved}</div>
-        <div className="vt-stat-label">Approved</div>
-      </div>
+    <div className="app-stat-grid">
+      {cards.map(c => (
+        <div className="app-stat-card" key={c.label}>
+          <div className="app-stat-top">
+            <div className="app-stat-icon" style={{ background: c.bg, color: c.color }}>
+              <c.icon size={18} />
+            </div>
+          </div>
+          <div className="app-stat-value">{c.value}</div>
+          <div className="app-stat-label">{c.label}</div>
+        </div>
+      ))}
     </div>
   );
 }
