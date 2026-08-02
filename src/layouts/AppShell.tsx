@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, KanbanSquare, UserCircle, LogOut, PlaneTakeoff, Menu, X } from 'lucide-react';
+import {
+  LayoutDashboard, Briefcase, KanbanSquare, UserCircle, LogOut, PlaneTakeoff,
+  Menu, X, PanelLeftClose, PanelLeftOpen,
+} from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AppRole } from '../constants/roles';
 import { signOut } from '../services/authService';
 import ThemeToggle from '../components/ThemeToggle';
+import UserAvatar from '../components/UserAvatar';
 
 interface AppShellProps {
   user: User;
   role: AppRole;
 }
+
+const COLLAPSE_KEY = 'visa-tracker-sidebar-collapsed';
 
 const ADMIN_NAV = [
   { to: '/app/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -23,19 +29,17 @@ const APPLICANT_NAV = [
   { to: '/app/profile', label: 'Profile', icon: UserCircle },
 ];
 
-function initialsFor(user: User): string {
-  const source = user.displayName || user.email || '?';
-  const parts = source.trim().split(/\s+/);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return source.slice(0, 2).toUpperCase();
-}
-
 export default function AppShell({ user, role }: AppShellProps) {
   const navItems = role === 'admin' ? ADMIN_NAV : APPLICANT_NAV;
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === 'true');
+
+  useEffect(() => {
+    localStorage.setItem(COLLAPSE_KEY, String(collapsed));
+  }, [collapsed]);
 
   return (
-    <div className="app-root app-shell">
+    <div className={`app-root app-shell${collapsed ? ' collapsed' : ''}`}>
       <div className="app-mobile-topbar">
         <div className="app-logo" style={{ padding: 0 }}>
           <div className="app-logo-mark"><PlaneTakeoff size={16} /></div>
@@ -51,7 +55,7 @@ export default function AppShell({ user, role }: AppShellProps) {
 
       {mobileNavOpen && <div className="app-mobile-backdrop" onClick={() => setMobileNavOpen(false)} />}
 
-      <aside className={`app-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}>
+      <aside className={`app-sidebar${mobileNavOpen ? ' mobile-open' : ''}${collapsed ? ' collapsed' : ''}`}>
         <div className="app-logo">
           <div className="app-logo-mark"><PlaneTakeoff size={18} /></div>
           <div style={{ flex: 1 }}>
@@ -60,6 +64,15 @@ export default function AppShell({ user, role }: AppShellProps) {
           </div>
           <button className="app-icon-btn app-sidebar-close" style={{ color: 'var(--sidebar-text)' }} onClick={() => setMobileNavOpen(false)} aria-label="Close menu">
             <X size={18} />
+          </button>
+          <button
+            className="app-icon-btn app-sidebar-collapse-btn"
+            style={{ color: 'var(--sidebar-text)' }}
+            onClick={() => setCollapsed(c => !c)}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
           </button>
         </div>
 
@@ -70,17 +83,18 @@ export default function AppShell({ user, role }: AppShellProps) {
               to={to}
               className={({ isActive }) => `app-nav-item${isActive ? ' active' : ''}`}
               onClick={() => setMobileNavOpen(false)}
+              title={label}
             >
               <Icon size={17} />
-              {label}
+              <span className="app-nav-label">{label}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="app-sidebar-footer">
           <div className="app-sidebar-user">
-            <div className="app-avatar">{initialsFor(user)}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <UserAvatar user={user} />
+            <div className="app-sidebar-user-info" style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.displayName || 'Signed in'}
               </div>

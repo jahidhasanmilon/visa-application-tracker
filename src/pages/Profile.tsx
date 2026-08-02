@@ -1,6 +1,7 @@
 import { ShieldCheck, UserRound, Mail, LogOut } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import PageHeader from '../components/PageHeader';
+import UserAvatar from '../components/UserAvatar';
 import { useApplicants } from '../hooks/useApplicants';
 import type { AppRole } from '../constants/roles';
 import { signOut } from '../services/authService';
@@ -10,22 +11,13 @@ interface ProfileProps {
   role: AppRole;
 }
 
-function initialsFor(user: User): string {
-  const source = user.displayName || user.email || '?';
-  const parts = source.trim().split(/\s+/);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return source.slice(0, 2).toUpperCase();
-}
-
 export default function Profile({ user, role }: ProfileProps) {
   return (
     <>
       <PageHeader title="Profile" subtitle="Your account details." />
       <div className="app-content">
         <div className="app-card app-card-pad" style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-          <div className="app-avatar app-avatar-lg" style={{ background: 'var(--violet-soft)', color: 'var(--violet)' }}>
-            {initialsFor(user)}
-          </div>
+          <UserAvatar user={user} size="lg" style={{ background: 'var(--violet-soft)', color: 'var(--violet)' }} />
           <div style={{ flex: 1, minWidth: 160 }}>
             <div className="app-brand-font" style={{ fontWeight: 700, fontSize: 18 }}>{user.displayName || 'Signed-in account'}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>
