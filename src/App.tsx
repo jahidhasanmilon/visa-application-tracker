@@ -7,7 +7,7 @@ import ApplicantTable from './components/ApplicantTable';
 import ApplicantModal from './components/ApplicantModal';
 import LoginScreen from './components/LoginScreen';
 import { STATUS_OPTIONS } from './constants/status';
-import { todayStr, enrichApplicant } from './utils/dateHelpers';
+import { todayStr, enrichApplicant, serialNumberValue } from './utils/dateHelpers';
 import { subscribeApplicants, addApplicant, updateApplicant, deleteApplicant } from './services/applicantsService';
 import { signOut } from './services/authService';
 import { useAuth } from './hooks/useAuth';
@@ -45,7 +45,9 @@ export default function App() {
 
   const enriched: EnrichedApplicant[] = useMemo(() => {
     const t = todayStr();
-    return applicants.map(a => enrichApplicant(a, t));
+    return applicants
+      .map(a => enrichApplicant(a, t))
+      .sort((a, b) => serialNumberValue(a.serialNo) - serialNumberValue(b.serialNo));
   }, [applicants]);
 
   const filtered = useMemo(() => {

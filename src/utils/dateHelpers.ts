@@ -24,6 +24,13 @@ export function urgency(remaining: number): { label: string; color: string } {
   return { label: 'On track', color: '#2F6F62' };
 }
 
+// Extracts the trailing numeric part of a serial no (e.g. "AP/260/.../000000525" -> 525)
+// so applicants sort by their actual serial number regardless of format/padding.
+export function serialNumberValue(serialNo: string): number {
+  const match = serialNo.match(/(\d+)\s*$/);
+  return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+}
+
 // Enrich a raw applicant record with computed fields (waiting/remaining days, urgency)
 export function enrichApplicant(a: Applicant, today: string = todayStr()): EnrichedApplicant {
   const waiting = daysBetween(a.created, today);
