@@ -31,7 +31,7 @@ export default function AdminDashboard() {
       <div className="app-content">
         <StatCards stats={stats} />
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) minmax(0, 1fr)', gap: 20 }}>
+        <div className="app-dashboard-grid">
           <div className="app-card app-card-pad">
             <div className="app-card-head">
               <div className="app-card-title">Recent applicants</div>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import {
-  signInWithEmail, signUpWithEmail, signInWithGoogle, signOut, friendlyAuthError,
+  signInWithEmail, signUpWithEmail, signInWithGoogle, signOut, resetPassword, friendlyAuthError,
 } from '../../services/authService';
 
 interface AuthFormProps {
@@ -15,11 +15,18 @@ interface AuthFormProps {
 }
 
 export default function AuthForm({ title, subtitle, switchTo, allowSignUp = true, guard }: AuthFormProps) {
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup' | 'reset'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+
+  function switchMode(next: 'signin' | 'signup' | 'reset') {
+    setMode(next);
+    setError('');
+    setNotice('');
+  }
 
   async function afterAuth(signedInEmail: string | null) {
     if (guard) {
@@ -34,12 +41,18 @@ export default function AuthForm({ title, subtitle, switchTo, allowSignUp = true
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setNotice('');
     setBusy(true);
     try {
-      const cred = mode === 'signin'
-        ? await signInWithEmail(email, password)
-        : await signUpWithEmail(email, password);
-      await afterAuth(cred.user.email);
+      if (mode === 'reset') {
+        await resetPassword(email);
+        setNotice(`Password reset link sent to ${email}. Check your inbox.`);
+      } else {
+        const cred = mode === 'signin'
+          ? await signInWithEmail(email, password)
+          : await signUpWithEmail(email, password);
+        await afterAuth(cred.user.email);
+      }
     } catch (err) {
       const code = (err as { code?: string }).code || '';
       setError(friendlyAuthError(code));
@@ -68,8 +81,12 @@ export default function AuthForm({ title, subtitle, switchTo, allowSignUp = true
         <ArrowLeft size={14} /> Choose a different portal
       </Link>
 
-      <div className="app-page-title" style={{ marginBottom: 4 }}>{title}</div>
-      <div style={{ color: 'var(--muted)', fontSize: 13.5, marginBottom: 24 }}>{subtitle}</div>
+      <div className="app-page-title" style={{ marginBottom: 4 }}>
+        {mode === 'reset' ? 'Reset your password' : title}
+      </div>
+      <div style={{ color: 'var(--muted)', fontSize: 13.5, marginBottom: 24 }}>
+        {mode === 'reset' ? "Enter your account's email and we'll send you a reset link." : subtitle}
+      </div>
 
       <form onSubmit={handleSubmit}>
         <div className="app-field">
@@ -79,39 +96,57 @@ export default function AuthForm({ title, subtitle, switchTo, allowSignUp = true
             <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
           </div>
         </div>
-        <div className="app-field">
-          <label>Password</label>
-          <div className="app-input-wrap">
-            <Lock size={16} />
-            <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+        {mode !== 'reset' && (
+          <div className="app-field">
+            <label>Password</label>
+            <div className="app-input-wrap">
+              <Lock size={16} />
+              <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            {mode === 'signin' && (
+              <div style={{ textAlign: 'right', marginTop: 6 }}>
+                <a href="#" onClick={(e) => { e.preventDefault(); switchMode('reset'); }} style={{ fontSize: 12.5, color: 'var(--muted)', textDecoration: 'none' }}>
+                  Forgot password?
+                </a>
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
         {error && <div style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 14 }}>{error}</div>}
+        {notice && <div style={{ color: 'var(--success)', fontSize: 13, marginBottom: 14 }}>{notice}</div>}
 
         <button className="app-btn app-btn-primary app-btn-block" type="submit" disabled={busy}>
-          {busy ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+          {busy ? 'Please wait…' : mode === 'signin' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Send reset link'}
         </button>
       </form>
 
-      <div className="app-divider-text">or</div>
-
-      <button className="app-btn app-btn-ghost app-btn-block" onClick={handleGoogle} disabled={busy}>
-        Continue with Google
-      </button>
-
-      {allowSignUp && (
+      {mode === 'reset' ? (
         <div style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: 'var(--muted)' }}>
-          {mode === 'signin' ? (
-            <>Don't have an account?{' '}
-              <a href="#" onClick={(e) => { e.preventDefault(); setMode('signup'); setError(''); }} style={{ color: 'var(--ink)', fontWeight: 600 }}>Sign up</a>
-            </>
-          ) : (
-            <>Already have an account?{' '}
-              <a href="#" onClick={(e) => { e.preventDefault(); setMode('signin'); setError(''); }} style={{ color: 'var(--ink)', fontWeight: 600 }}>Sign in</a>
-            </>
-          )}
+          <a href="#" onClick={(e) => { e.preventDefault(); switchMode('signin'); }} style={{ color: 'var(--ink)', fontWeight: 600 }}>← Back to sign in</a>
         </div>
+      ) : (
+        <>
+          <div className="app-divider-text">or</div>
+
+          <button className="app-btn app-btn-ghost app-btn-block" onClick={handleGoogle} disabled={busy}>
+            Continue with Google
+          </button>
+
+          {allowSignUp && (
+            <div style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: 'var(--muted)' }}>
+              {mode === 'signin' ? (
+                <>Don't have an account?{' '}
+                  <a href="#" onClick={(e) => { e.preventDefault(); switchMode('signup'); }} style={{ color: 'var(--ink)', fontWeight: 600 }}>Sign up</a>
+                </>
+              ) : (
+                <>Already have an account?{' '}
+                  <a href="#" onClick={(e) => { e.preventDefault(); switchMode('signin'); }} style={{ color: 'var(--ink)', fontWeight: 600 }}>Sign in</a>
+                </>
+              )}
+            </div>
+          )}
+        </>
       )}
 
       <div style={{ textAlign: 'center', marginTop: 10, fontSize: 12.5 }}>

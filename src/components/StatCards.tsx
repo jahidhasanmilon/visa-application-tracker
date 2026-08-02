@@ -8,7 +8,7 @@ interface StatCardsProps {
 export default function StatCards({ stats }: StatCardsProps) {
   const cards = [
     { label: 'Total applicants', value: stats.total, icon: Users, color: 'var(--violet)', bg: 'var(--violet-soft)' },
-    { label: 'Due within 30 days', value: stats.urgent, icon: AlarmClock, color: '#B77A00', bg: 'var(--warning-soft)' },
+    { label: 'Due within 30 days', value: stats.urgent, icon: AlarmClock, color: 'var(--warning-ink)', bg: 'var(--warning-soft)' },
     { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: 'var(--danger)', bg: 'var(--danger-soft)' },
     { label: 'Approved', value: stats.approved, icon: CheckCircle2, color: 'var(--success)', bg: 'var(--success-soft)' },
   ];

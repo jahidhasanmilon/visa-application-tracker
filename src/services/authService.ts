@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  sendPasswordResetEmail,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   type UserCredential,
@@ -26,6 +27,10 @@ export function signOut(): Promise<void> {
   return firebaseSignOut(auth);
 }
 
+export function resetPassword(email: string): Promise<void> {
+  return sendPasswordResetEmail(auth, email);
+}
+
 // Turns Firebase's error codes into messages a non-developer can read.
 export function friendlyAuthError(code: string): string {
   switch (code) {
@@ -36,6 +41,7 @@ export function friendlyAuthError(code: string): string {
     case 'auth/email-already-in-use': return 'An account with that email already exists.';
     case 'auth/weak-password': return 'Password should be at least 6 characters.';
     case 'auth/popup-closed-by-user': return 'Google sign-in was closed before finishing.';
+    case 'auth/too-many-requests': return 'Too many attempts. Please wait a moment and try again.';
     default: return 'Something went wrong. Please try again.';
   }
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { PlaneTakeoff } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 interface AuthLayoutProps {
   eyebrow: string;
@@ -35,6 +36,9 @@ export default function AuthLayout({ eyebrow, headline, sub, stats, children }: 
       </div>
 
       <div className="app-auth-form-side">
+        <div className="app-auth-theme-toggle">
+          <ThemeToggle />
+        </div>
         <div className="app-auth-form-wrap">{children}</div>
       </div>
     </div>

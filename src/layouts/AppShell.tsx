@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, KanbanSquare, UserCircle, LogOut, PlaneTakeoff } from 'lucide-react';
+import { LayoutDashboard, Briefcase, KanbanSquare, UserCircle, LogOut, PlaneTakeoff, Menu, X } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AppRole } from '../constants/roles';
 import { signOut } from '../services/authService';
+import ThemeToggle from '../components/ThemeToggle';
 
 interface AppShellProps {
   user: User;
@@ -30,16 +32,35 @@ function initialsFor(user: User): string {
 
 export default function AppShell({ user, role }: AppShellProps) {
   const navItems = role === 'admin' ? ADMIN_NAV : APPLICANT_NAV;
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
     <div className="app-root app-shell">
-      <aside className="app-sidebar">
+      <div className="app-mobile-topbar">
+        <div className="app-logo" style={{ padding: 0 }}>
+          <div className="app-logo-mark"><PlaneTakeoff size={16} /></div>
+          <div className="app-logo-text" style={{ color: 'var(--ink)' }}>VisaTrack</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <ThemeToggle />
+          <button className="app-icon-btn" onClick={() => setMobileNavOpen(true)} aria-label="Open menu">
+            <Menu size={20} />
+          </button>
+        </div>
+      </div>
+
+      {mobileNavOpen && <div className="app-mobile-backdrop" onClick={() => setMobileNavOpen(false)} />}
+
+      <aside className={`app-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}>
         <div className="app-logo">
           <div className="app-logo-mark"><PlaneTakeoff size={18} /></div>
-          <div>
+          <div style={{ flex: 1 }}>
             <div className="app-logo-text">VisaTrack</div>
             <div className="app-logo-sub">{role === 'admin' ? 'Staff console' : 'Applicant portal'}</div>
           </div>
+          <button className="app-icon-btn app-sidebar-close" style={{ color: 'var(--sidebar-text)' }} onClick={() => setMobileNavOpen(false)} aria-label="Close menu">
+            <X size={18} />
+          </button>
         </div>
 
         <nav className="app-nav">
@@ -48,6 +69,7 @@ export default function AppShell({ user, role }: AppShellProps) {
               key={to}
               to={to}
               className={({ isActive }) => `app-nav-item${isActive ? ' active' : ''}`}
+              onClick={() => setMobileNavOpen(false)}
             >
               <Icon size={17} />
               {label}
@@ -66,6 +88,7 @@ export default function AppShell({ user, role }: AppShellProps) {
                 {user.email}
               </div>
             </div>
+            <ThemeToggle className="app-icon-btn" style={{ color: 'var(--sidebar-text)' }} />
             <button
               className="app-icon-btn"
               style={{ color: 'var(--sidebar-text)' }}
