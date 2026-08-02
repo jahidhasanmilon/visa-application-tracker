@@ -28,6 +28,8 @@ export default function ApplicantTable({
             <th>Applied</th>
             <th>Waiting</th>
             <th>Remaining</th>
+            <th>Last Updated</th>
+            <th>Reminder Mail</th>
             <th>Notes</th>
             <th></th>
           </tr>

@@ -1,4 +1,4 @@
-import { Search, Plus, History } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { STATUS_OPTIONS } from '../constants/status';
 import type { StatusOption } from '../types';
 
@@ -8,12 +8,10 @@ interface ToolbarProps {
   statusFilter: StatusOption | 'All';
   setStatusFilter: (v: StatusOption | 'All') => void;
   onAdd: () => void;
-  showLog: boolean;
-  setShowLog: (v: (prev: boolean) => boolean) => void;
 }
 
 export default function Toolbar({
-  search, setSearch, statusFilter, setStatusFilter, onAdd, showLog, setShowLog,
+  search, setSearch, statusFilter, setStatusFilter, onAdd,
 }: ToolbarProps) {
   return (
     <div className="vt-toolbar">
@@ -34,9 +32,6 @@ export default function Toolbar({
         {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
       </select>
       <button className="vt-btn" onClick={onAdd}><Plus size={16} /> Add applicant</button>
-      <button className="vt-btn vt-btn-ghost" onClick={() => setShowLog(s => !s)}>
-        <History size={16} /> {showLog ? 'Hide log' : 'Status log'}
-      </button>
     </div>
   );
 }

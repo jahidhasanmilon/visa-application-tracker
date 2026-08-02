@@ -3,29 +3,26 @@ import Header from './components/Header';
 import StatCards from './components/StatCards';
 import StatusChart from './components/StatusChart';
 import Toolbar from './components/Toolbar';
-import StatusLogPanel from './components/StatusLogPanel';
 import ApplicantTable from './components/ApplicantTable';
 import ApplicantModal from './components/ApplicantModal';
 import LoginScreen from './components/LoginScreen';
 import { STATUS_OPTIONS } from './constants/status';
 import { todayStr, enrichApplicant } from './utils/dateHelpers';
-import { subscribeApplicants, subscribeLog, addApplicant, updateApplicant, deleteApplicant } from './services/applicantsService';
+import { subscribeApplicants, addApplicant, updateApplicant, deleteApplicant } from './services/applicantsService';
 import { signOut } from './services/authService';
 import { useAuth } from './hooks/useAuth';
 import { EMPTY_FORM } from './data/seedData';
-import type { Applicant, LogEntry, ApplicantFormData, StatusOption, EnrichedApplicant } from './types';
+import type { Applicant, ApplicantFormData, StatusOption, EnrichedApplicant } from './types';
 import './styles/theme.css';
 
 export default function App() {
   const { user, authLoading } = useAuth();
 
   const [applicants, setApplicants] = useState<Applicant[]>([]);
-  const [log, setLog] = useState<LogEntry[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusOption | 'All'>('All');
-  const [showLog, setShowLog] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingApplicant, setEditingApplicant] = useState<Applicant | null>(null);
@@ -36,7 +33,6 @@ export default function App() {
   useEffect(() => {
     if (!user) {
       setApplicants([]);
-      setLog([]);
       return;
     }
     setDataLoading(true);
@@ -44,11 +40,7 @@ export default function App() {
       setApplicants(data);
       setDataLoading(false);
     });
-    const unsubLog = subscribeLog(setLog);
-    return () => {
-      unsubApplicants();
-      unsubLog();
-    };
+    return () => unsubApplicants();
   }, [user]);
 
   const enriched: EnrichedApplicant[] = useMemo(() => {
@@ -91,15 +83,18 @@ export default function App() {
   }
 
   function openEdit(a: EnrichedApplicant) {
-    setForm({ name: a.name, email: a.email, status: a.status, created: a.created, submitted: a.submitted, notes: a.notes });
+    setForm({
+      serialNo: a.serialNo, name: a.name, email: a.email, status: a.status,
+      created: a.created, submitted: a.submitted, notes: a.notes, reminderMailSent: a.reminderMailSent,
+    });
     setEditingApplicant(a);
     setModalOpen(true);
   }
 
   async function saveForm() {
-    if (!form.name.trim()) return;
+    if (!form.name.trim() || !form.serialNo.trim()) return;
     if (editingApplicant) {
-      await updateApplicant(editingApplicant.id, form, editingApplicant.status);
+      await updateApplicant(editingApplicant.id, form);
     } else {
       await addApplicant(form);
     }
@@ -136,11 +131,7 @@ export default function App() {
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
           onAdd={openAdd}
-          showLog={showLog}
-          setShowLog={setShowLog}
         />
-
-        {showLog && <StatusLogPanel log={log} />}
 
         <ApplicantTable
           applicants={filtered}

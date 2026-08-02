@@ -1,5 +1,5 @@
 import { STATUS_OPTIONS } from '../constants/status';
-import type { ApplicantFormData, StatusOption } from '../types';
+import type { ApplicantFormData, ReminderMailStatus, StatusOption } from '../types';
 
 interface ApplicantModalProps {
   open: boolean;
@@ -17,6 +17,11 @@ export default function ApplicantModal({ open, isEditing, form, setForm, onSave,
     <div className="vt-modal-backdrop" onClick={onClose}>
       <div className="vt-modal" onClick={e => e.stopPropagation()}>
         <h3>{isEditing ? 'Edit applicant' : 'Add applicant'}</h3>
+
+        <div className="vt-field">
+          <label>Serial No</label>
+          <input value={form.serialNo} onChange={e => setForm({ ...form, serialNo: e.target.value })} placeholder="e.g. AP/260/051125/000000525" />
+        </div>
 
         <div className="vt-field">
           <label>Name</label>
@@ -49,6 +54,14 @@ export default function ApplicantModal({ open, isEditing, form, setForm, onSave,
         <div className="vt-field">
           <label>Notes</label>
           <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Interview feedback, contact details, etc." />
+        </div>
+
+        <div className="vt-field">
+          <label>Reminder mail</label>
+          <select value={form.reminderMailSent} onChange={e => setForm({ ...form, reminderMailSent: e.target.value as ReminderMailStatus })}>
+            <option value="Not yet">Not yet</option>
+            <option value="Sent">Sent</option>
+          </select>
         </div>
 
         <div className="vt-modal-actions">

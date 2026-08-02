@@ -37,6 +37,15 @@ export default function ApplicantRow({
         <span className="vt-urgency-dot" style={{ background: a.urg.color }} />
         {a.remaining > 0 ? `${a.remaining}d left` : `${Math.abs(a.remaining)}d overdue`}
       </td>
+      <td className="vt-mono">{fmtDate(a.lastUpdated)}</td>
+      <td>
+        <span className="vt-badge" style={{
+          background: a.reminderMailSent === 'Sent' ? '#DCEEE6' : '#F7E4DB',
+          color: a.reminderMailSent === 'Sent' ? '#2F6F62' : '#C1440E',
+        }}>
+          {a.reminderMailSent}
+        </span>
+      </td>
       <td style={{ maxWidth: 160, fontSize: 12.5, color: 'var(--slate)' }}>{a.notes || '—'}</td>
       <td style={{ position: 'relative', whiteSpace: 'nowrap' }}>
         <button className="vt-icon-btn" onClick={() => onEdit(a)}><Pencil size={15} /></button>

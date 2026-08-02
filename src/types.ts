@@ -1,4 +1,5 @@
 export type StatusOption = 'Applied' | 'Submitted' | 'Under Review' | 'Approved' | 'Rejected';
+export type ReminderMailStatus = 'Not yet' | 'Sent';
 
 export interface Applicant {
   id: string;
@@ -6,9 +7,11 @@ export interface Applicant {
   name: string;
   email: string;
   status: StatusOption;
-  created: string;   // ISO date string, e.g. "2026-07-05"
-  submitted: string; // ISO date string
+  created: string;      // ISO date string, e.g. "2026-07-05"
+  submitted: string;    // ISO date string
   notes: string;
+  lastUpdated: string;  // ISO date string, set automatically on every save
+  reminderMailSent: ReminderMailStatus;
 }
 
 export interface EnrichedApplicant extends Applicant {
@@ -17,20 +20,15 @@ export interface EnrichedApplicant extends Applicant {
   urg: { label: string; color: string };
 }
 
-export interface LogEntry {
-  date: string;
-  name: string;
-  update: string;
-  notes: string;
-}
-
 export interface ApplicantFormData {
+  serialNo: string;
   name: string;
   email: string;
   status: StatusOption;
   created: string;
   submitted: string;
   notes: string;
+  reminderMailSent: ReminderMailStatus;
 }
 
 export interface StatCounts {
