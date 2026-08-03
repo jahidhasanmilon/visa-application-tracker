@@ -3,11 +3,13 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
+  updateProfile,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   type UserCredential,
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, storage } from '../firebase';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -29,6 +31,16 @@ export function signOut(): Promise<void> {
 
 export function resetPassword(email: string): Promise<void> {
   return sendPasswordResetEmail(auth, email);
+}
+
+export async function uploadProfilePhoto(file: File): Promise<string> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not signed in.');
+  const fileRef = ref(storage, `avatars/${user.uid}`);
+  await uploadBytes(fileRef, file, { contentType: file.type });
+  const url = await getDownloadURL(fileRef);
+  await updateProfile(user, { photoURL: url });
+  return url;
 }
 
 // Turns Firebase's error codes into messages a non-developer can read.

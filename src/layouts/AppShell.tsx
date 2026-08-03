@@ -86,7 +86,7 @@ export default function AppShell({ user, role }: AppShellProps) {
 
         <div className="app-sidebar-footer">
           <div className="app-sidebar-user">
-            <UserAvatar user={user} />
+            <UserAvatar user={user} plain />
             <div className="app-sidebar-user-info" style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.displayName || 'Signed in'}

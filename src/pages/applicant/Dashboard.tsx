@@ -111,9 +111,9 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
           This application was not approved. Contact the team for more details.
         </div>
       ) : (
-        <div style={{ display: 'flex', alignItems: 'center', margin: '22px 0 22px', flexWrap: 'wrap', rowGap: 18 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', margin: '22px 0 22px', flexWrap: 'wrap', rowGap: 20, columnGap: 0 }}>
           {roadmap.map((step, i) => (
-            <div key={step.id} style={{ display: 'flex', alignItems: 'center', flex: i === roadmap.length - 1 ? '0 0 auto' : 1 }}>
+            <div key={step.id} style={{ display: 'flex', alignItems: 'flex-start' }}>
               <button
                 type="button"
                 onClick={() => toggleStep(step)}
@@ -121,6 +121,7 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit',
+                  width: 76, flexShrink: 0,
                 }}
                 title={step.done ? 'Mark as not yet' : 'Mark as done'}
               >
@@ -133,10 +134,13 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
                 }}>
                   {step.done ? <Check size={13} /> : i + 1}
                 </div>
-                <div style={{ fontSize: 10.5, color: step.done ? 'var(--ink)' : 'var(--muted-2)', fontWeight: step.done ? 600 : 500, whiteSpace: 'nowrap' }}>{step.label}</div>
+                <div style={{
+                  fontSize: 10.5, color: step.done ? 'var(--ink)' : 'var(--muted-2)', fontWeight: step.done ? 600 : 500,
+                  textAlign: 'center', lineHeight: 1.25, overflowWrap: 'break-word',
+                }}>{step.label}</div>
               </button>
               {i < roadmap.length - 1 && (
-                <div style={{ flex: 1, height: 2, background: step.done ? 'var(--success)' : 'var(--border)', margin: '0 6px 18px' }} />
+                <div style={{ flex: '1 1 28px', minWidth: 20, maxWidth: 60, height: 2, background: step.done ? 'var(--success)' : 'var(--border)', margin: '12px 4px 0' }} />
               )}
             </div>
           ))}

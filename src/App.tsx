@@ -16,7 +16,7 @@ import Profile from './pages/Profile';
 import './styles/theme.css';
 
 export default function App() {
-  const { user, role, authLoading } = useAuth();
+  const { user, role, authLoading, refreshUser } = useAuth();
 
   if (authLoading) {
     return <div className="app-loading-screen">Loading…</div>;
@@ -42,7 +42,7 @@ export default function App() {
         <Route path="roadmap" element={role === 'admin' ? <AdminRoadmap /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="reminder-email" element={role === 'admin' ? <AdminReminderEmail /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="checklist" element={role === 'admin' ? <AdminChecklist /> : <ApplicantChecklist email={user.email!} />} />
-        <Route path="profile" element={<Profile user={user} role={role} />} />
+        <Route path="profile" element={<Profile user={user} role={role} onPhotoChange={refreshUser} />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/app/dashboard" replace />} />

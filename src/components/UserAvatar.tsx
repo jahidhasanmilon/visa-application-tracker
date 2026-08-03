@@ -6,7 +6,17 @@ interface UserAvatarProps {
   size?: 'lg';
   className?: string;
   style?: React.CSSProperties;
+  /** Skip the per-user color and use the plain default (e.g. inside the dark sidebar). */
+  plain?: boolean;
 }
+
+const PALETTE: { bg: string; fg: string }[] = [
+  { bg: 'var(--violet-soft)', fg: 'var(--violet)' },
+  { bg: 'var(--success-soft)', fg: 'var(--success)' },
+  { bg: 'var(--info-soft)', fg: 'var(--info)' },
+  { bg: 'var(--warning-soft)', fg: 'var(--warning-ink)' },
+  { bg: 'var(--danger-soft)', fg: 'var(--danger)' },
+];
 
 function initialsFor(user: User): string {
   const source = user.displayName || user.email || '?';
@@ -15,7 +25,14 @@ function initialsFor(user: User): string {
   return source.slice(0, 2).toUpperCase();
 }
 
-export default function UserAvatar({ user, size, className = '', style }: UserAvatarProps) {
+function colorFor(user: User): { bg: string; fg: string } {
+  const source = user.uid || user.email || '?';
+  let hash = 0;
+  for (let i = 0; i < source.length; i++) hash = (hash * 31 + source.charCodeAt(i)) >>> 0;
+  return PALETTE[hash % PALETTE.length];
+}
+
+export default function UserAvatar({ user, size, className = '', style, plain }: UserAvatarProps) {
   const [photoFailed, setPhotoFailed] = useState(false);
   const classes = `app-avatar${size === 'lg' ? ' app-avatar-lg' : ''}${className ? ` ${className}` : ''}`;
 
@@ -32,8 +49,10 @@ export default function UserAvatar({ user, size, className = '', style }: UserAv
     );
   }
 
+  const colors = plain ? null : colorFor(user);
+
   return (
-    <div className={classes} style={style}>
+    <div className={classes} style={{ ...(colors ? { background: colors.bg, color: colors.fg } : {}), ...style }}>
       {initialsFor(user)}
     </div>
   );
