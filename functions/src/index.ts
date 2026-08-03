@@ -15,6 +15,21 @@ const ADMIN_EMAILS = ['jahidhasanmilon999@gmail.com'];
 // from the applicant's lastUpdated date.
 const REMINDER_WINDOW_DAYS = 30;
 
+// Mirrors src/constants/emailTemplate.ts — used only if the admin hasn't
+// saved a custom template yet at meta/emailTemplate.
+const DEFAULT_TEMPLATE = {
+  subject: 'Application Reminder (30-Day): {{name}} — {{serialNo}}',
+  body: `The 30-day follow-up window has passed for this application.
+
+Name: {{name}}
+Serial No: {{serialNo}}
+Status: {{status}}
+Last updated: {{lastUpdated}}
+Days overdue: {{daysOverdue}}
+
+Please review and follow up.`,
+};
+
 const GMAIL_USER = defineSecret('GMAIL_USER');
 const GMAIL_APP_PASSWORD = defineSecret('GMAIL_APP_PASSWORD');
 
@@ -28,6 +43,10 @@ function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+function renderTemplate(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => vars[key] ?? '');
+}
+
 interface ApplicantDoc {
   name?: string;
   serialNo?: string;
@@ -38,9 +57,21 @@ interface ApplicantDoc {
   reminderEmailSentAt?: string;
 }
 
+interface EmailTemplateDoc {
+  subject?: string;
+  body?: string;
+}
+
 async function runReminderSweep(): Promise<{ sent: number; checked: number }> {
   const db = getFirestore();
   const today = todayStr();
+
+  const templateSnap = await db.doc('meta/emailTemplate').get();
+  const templateDoc = templateSnap.data() as EmailTemplateDoc | undefined;
+  const template = {
+    subject: templateDoc?.subject || DEFAULT_TEMPLATE.subject,
+    body: templateDoc?.body || DEFAULT_TEMPLATE.body,
+  };
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -63,26 +94,20 @@ async function runReminderSweep(): Promise<{ sent: number; checked: number }> {
     const recipients = [...ADMIN_EMAILS];
     if (a.email) recipients.push(a.email);
 
-    const daysOverdue = Math.abs(reminderDaysLeft);
-    const subject = `Application Reminder (30-Day): ${a.name ?? 'Applicant'} — ${a.serialNo ?? ''}`;
-    const html = `
-      <p>The 30-day follow-up window has passed for this application.</p>
-      <ul>
-        <li><b>Name:</b> ${a.name ?? '—'}</li>
-        <li><b>Serial No:</b> ${a.serialNo ?? '—'}</li>
-        <li><b>Status:</b> ${a.status ?? '—'}</li>
-        <li><b>Last updated:</b> ${a.lastUpdated}</li>
-        <li><b>Days ${reminderDaysLeft === 0 ? 'since due' : 'overdue'}:</b> ${daysOverdue}</li>
-      </ul>
-      <p>Please review and follow up.</p>
-    `;
+    const vars = {
+      name: a.name ?? 'Applicant',
+      serialNo: a.serialNo ?? '',
+      status: a.status ?? '',
+      lastUpdated: a.lastUpdated,
+      daysOverdue: String(Math.abs(reminderDaysLeft)),
+    };
 
     try {
       await transporter.sendMail({
         from: `VisaTrack <${GMAIL_USER.value()}>`,
         to: recipients.join(', '),
-        subject,
-        html,
+        subject: renderTemplate(template.subject, vars),
+        text: renderTemplate(template.body, vars),
       });
       await doc.ref.update({ reminderEmailSentAt: today });
       sent++;

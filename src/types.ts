@@ -55,3 +55,8 @@ export interface PieDatum {
   name: StatusOption;
   value: number;
 }
+
+export interface EmailTemplate {
+  subject: string;
+  body: string;
+}

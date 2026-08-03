@@ -32,5 +32,12 @@ service cloud.firestore {
     match /meta/statusOptions {
       allow read, write: if isAdminEmail();
     }
+
+    // Editable subject/body for the 30-day reminder email (read by the
+    // sendReminderEmails Cloud Function via the Admin SDK, which bypasses
+    // these rules — this only governs the admin-panel editor).
+    match /meta/emailTemplate {
+      allow read, write: if isAdminEmail();
+    }
   }
 }
