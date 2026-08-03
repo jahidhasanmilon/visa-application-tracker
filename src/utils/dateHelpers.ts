@@ -1,4 +1,4 @@
-import { TARGET_DAYS } from '../constants/status';
+import { TARGET_DAYS, REMINDER_WINDOW_DAYS } from '../constants/status';
 import type { Applicant, EnrichedApplicant } from '../types';
 
 export function daysBetween(a: string, b: string): number {
@@ -34,8 +34,10 @@ export function serialNumberValue(serialNo: string): number {
 // Enrich a raw applicant record with computed fields (waiting/remaining days, urgency).
 // Waiting time counts from the submitted date (not the created/applied date) —
 // remaining is an estimate against TARGET_DAYS, not a guaranteed timeline.
+// reminderDaysLeft counts down a 30-day window from the (manually-set) last-updated date.
 export function enrichApplicant(a: Applicant, today: string = todayStr()): EnrichedApplicant {
   const waiting = daysBetween(a.submitted, today);
   const remaining = TARGET_DAYS - waiting;
-  return { ...a, waiting, remaining, urg: urgency(remaining) };
+  const reminderDaysLeft = REMINDER_WINDOW_DAYS - daysBetween(a.lastUpdated, today);
+  return { ...a, waiting, remaining, urg: urgency(remaining), reminderDaysLeft };
 }

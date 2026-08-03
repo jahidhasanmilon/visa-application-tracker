@@ -123,6 +123,9 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
           >
             {REMINDER_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
+          <div style={{ fontSize: 11.5, color: a.reminderDaysLeft > 0 ? 'var(--muted)' : 'var(--danger)', marginTop: 6 }}>
+            {a.reminderDaysLeft > 0 ? `${a.reminderDaysLeft} days left in this window` : `${Math.abs(a.reminderDaysLeft)} days overdue`}
+          </div>
         </div>
       </div>
     </div>

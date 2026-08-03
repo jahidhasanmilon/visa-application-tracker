@@ -36,6 +36,9 @@ export function getStatusMeta(status: string): StatusMeta {
 
 export const REMINDER_OPTIONS: ReminderStatus[] = ['Not yet', 'Urgent', 'Done'];
 
+// The reminder day-count counts down from the last-updated date: 30 - (today - lastUpdated).
+export const REMINDER_WINDOW_DAYS = 30;
+
 export const REMINDER_META: Record<ReminderStatus, { color: string; bg: string }> = {
   'Not yet': { color: 'var(--neutral)', bg: 'var(--neutral-soft)' },
   'Urgent':  { color: 'var(--danger)',  bg: 'var(--danger-soft)' },
