@@ -87,7 +87,7 @@ export default function Profile({ user, role, onUserUpdate }: ProfileProps) {
               disabled={uploading}
               title="Change profile photo"
               style={{
-                position: 'absolute', bottom: -2, right: -2, width: 24, height: 24,
+                position: 'absolute', bottom: -2, right: -2, width: 24, height: 24, padding: 0,
                 borderRadius: '50%', background: 'var(--violet)', color: '#fff',
                 border: '2px solid var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
