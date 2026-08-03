@@ -20,7 +20,6 @@ export default function AdminTracker() {
       serialNo: a.serialNo, name: a.name, email: a.email, status: a.status,
       created: a.created, submitted: a.submitted, notes: a.notes,
       lastUpdated: a.lastUpdated, reminderMailSent: a.reminderMailSent,
-      checklist: a.checklist || [],
     });
     setEditingApplicant(a);
     setModalOpen(true);

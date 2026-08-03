@@ -23,6 +23,7 @@ const ADMIN_NAV = [
   { to: '/app/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/app/applications', label: 'Applications', icon: Briefcase },
   { to: '/app/tracker', label: 'Tracker', icon: KanbanSquare },
+  { to: '/app/checklist', label: 'Checklist', icon: CheckSquare },
   { to: '/app/roadmap', label: 'Road to Success', icon: Milestone },
   { to: '/app/reminder-email', label: 'Reminder Email', icon: Mail },
   { to: '/app/profile', label: 'Profile', icon: UserCircle },
@@ -52,7 +53,7 @@ export default function AppShell({ user, role }: AppShellProps) {
           <div className="app-logo-mark"><PlaneTakeoff size={18} /></div>
           <div style={{ flex: 1 }}>
             <div className="app-logo-text">VisaTrack</div>
-            <div className="app-logo-sub">{role === 'admin' ? 'Staff console' : 'Applicant portal'}</div>
+            <div className="app-logo-sub">{role === 'admin' ? 'Admin console' : 'Applicant portal'}</div>
           </div>
           <button className="app-icon-btn app-sidebar-close" style={{ color: 'var(--sidebar-text)' }} onClick={() => setMobileNavOpen(false)} aria-label="Close menu">
             <X size={18} />

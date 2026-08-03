@@ -24,7 +24,7 @@ export default function AdminReminderEmail() {
 
   return (
     <>
-      <PageHeader title="Reminder Email" subtitle="Customize the 30-day reminder email sent to staff and applicants." />
+      <PageHeader title="Reminder Email" subtitle="Customize the 30-day reminder email sent to admin and applicants." />
       <div className="app-content">
         <div className="app-card app-card-pad">
           <div className="app-card-head">

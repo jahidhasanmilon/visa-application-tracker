@@ -9,6 +9,7 @@ import AdminApplications from './pages/admin/Applications';
 import AdminTracker from './pages/admin/Tracker';
 import AdminRoadmap from './pages/admin/Roadmap';
 import AdminReminderEmail from './pages/admin/ReminderEmail';
+import AdminChecklist from './pages/admin/Checklist';
 import ApplicantDashboard from './pages/applicant/Dashboard';
 import ApplicantChecklist from './pages/applicant/Checklist';
 import Profile from './pages/Profile';
@@ -40,7 +41,7 @@ export default function App() {
         <Route path="tracker" element={role === 'admin' ? <AdminTracker /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="roadmap" element={role === 'admin' ? <AdminRoadmap /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="reminder-email" element={role === 'admin' ? <AdminReminderEmail /> : <Navigate to="/app/dashboard" replace />} />
-        <Route path="checklist" element={role === 'admin' ? <Navigate to="/app/dashboard" replace /> : <ApplicantChecklist email={user.email!} />} />
+        <Route path="checklist" element={role === 'admin' ? <AdminChecklist /> : <ApplicantChecklist email={user.email!} />} />
         <Route path="profile" element={<Profile user={user} role={role} />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>

@@ -25,7 +25,7 @@ export default function Profile({ user, role }: ProfileProps) {
             </div>
             <div className="app-role-pill" style={{ marginTop: 10 }}>
               {role === 'admin' ? <ShieldCheck size={12} /> : <UserRound size={12} />}
-              {role === 'admin' ? 'Staff / Admin' : 'Applicant'}
+              {role === 'admin' ? 'Admin' : 'Applicant'}
             </div>
           </div>
           <button className="app-btn app-btn-ghost" onClick={() => signOut()}>
@@ -64,7 +64,7 @@ function ApplicantSummary({ email }: { email: string | null }) {
       </div>
       <p style={{ fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.7, margin: 0 }}>
         Your dashboard shows the applicant record on file with the email address <strong style={{ color: 'var(--ink)' }}>{email}</strong>.
-        If your status looks out of date, reach out to the team that filed your application — only staff can make changes here.
+        If your status looks out of date, reach out to the team that filed your application — only admin can make changes here.
       </p>
     </div>
   );

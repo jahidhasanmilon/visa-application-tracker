@@ -10,15 +10,15 @@ service cloud.firestore {
     }
 
     match /applicants/{applicantId} {
-      // Staff can read everything. Applicants can only read their own record
+      // Admin can read everything. Applicants can only read their own record
       // (matched by the email on the document).
       allow read: if isAdminEmail()
         || (request.auth != null && resource.data.email == request.auth.token.email);
 
-      // Only staff can create or delete applicant records.
+      // Only admin can create or delete applicant records.
       allow create, delete: if isAdminEmail();
 
-      // Staff can edit anything. An applicant may only update the
+      // Admin can edit anything. An applicant may only update the
       // "Application Reminder (30-Day)" status, checklist, and roadmap
       // toggle-state on their own record — nothing else.
       allow update: if isAdminEmail()

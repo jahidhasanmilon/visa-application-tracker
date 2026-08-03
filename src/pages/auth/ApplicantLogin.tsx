@@ -16,7 +16,7 @@ export default function ApplicantLogin() {
       <AuthForm
         title="Applicant sign-in"
         subtitle="Use the email address on file with your application."
-        switchTo={{ to: '/login/staff', label: "I'm staff instead →" }}
+        switchTo={{ to: '/login/staff', label: "I'm admin instead →" }}
       />
     </AuthLayout>
   );

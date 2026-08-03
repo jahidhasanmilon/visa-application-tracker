@@ -54,7 +54,6 @@ export interface ApplicantFormData {
   notes: string;
   lastUpdated: string;
   reminderMailSent: ReminderStatus;
-  checklist: ChecklistItem[];
 }
 
 export interface StatCounts {

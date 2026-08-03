@@ -1,4 +1,4 @@
-// Staff accounts that get the admin experience (full read/write on applicants).
+// Admin accounts that get the admin experience (full read/write on applicants).
 // Mirror this list in firestore.rules under isAdminEmail() when you change it.
 export const ADMIN_EMAILS: string[] = [
   'jahidhasanmilon999@gmail.com',

@@ -5,7 +5,7 @@ import { roleForEmail } from '../../constants/roles';
 export default function AdminLogin() {
   return (
     <AuthLayout
-      eyebrow="Staff console"
+      eyebrow="Admin console"
       headline="Run every case from one clear dashboard."
       sub="Add applicants, move statuses forward, and keep track of who's overdue for a follow-up."
       stats={[
@@ -15,14 +15,14 @@ export default function AdminLogin() {
       ]}
     >
       <AuthForm
-        title="Staff sign-in"
-        subtitle="Restricted to registered staff accounts."
+        title="Admin sign-in"
+        subtitle="Restricted to registered admin accounts."
         switchTo={{ to: '/login/apply', label: "I'm an applicant instead →" }}
         allowSignUp={false}
         guard={(email) => (
           roleForEmail(email) === 'admin'
             ? null
-            : "This account isn't registered as staff. Use the applicant portal instead."
+            : "This account isn't registered as admin. Use the applicant portal instead."
         )}
       />
     </AuthLayout>
