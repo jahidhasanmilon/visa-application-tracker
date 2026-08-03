@@ -141,9 +141,9 @@ button.app-sidebar-collapse-btn { display: none; flex-shrink: 0; }
 .app-logo-text { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 16.5px; color: #fff; line-height: 1.1; }
 .app-logo-sub { font-size: 10.5px; color: var(--sidebar-text-dim); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
 
-/* ---------- Mobile topbar / drawer nav ---------- */
+/* ---------- Top bar (persistent, all screen sizes) / drawer nav ---------- */
 .app-mobile-topbar {
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
@@ -159,6 +159,44 @@ button.app-sidebar-collapse-btn { display: none; flex-shrink: 0; }
   z-index: 58;
 }
 button.app-sidebar-close { display: none; }
+
+/* ---------- Notification bell + drawer ---------- */
+.app-notif-btn { position: relative; }
+.app-notif-badge {
+  position: absolute; top: 2px; right: 2px;
+  min-width: 16px; height: 16px; padding: 0 3px;
+  border-radius: 20px;
+  background: var(--danger); color: #fff;
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.app-notif-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(10, 8, 20, 0.5);
+  z-index: 64;
+}
+.app-notif-drawer {
+  position: fixed; top: 0; right: 0; z-index: 65;
+  height: 100vh; height: 100dvh; width: 340px; max-width: 90vw;
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.app-notif-drawer.open { transform: translateX(0); }
+.app-notif-drawer-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--surface);
+}
+.app-notif-item {
+  display: block; padding: 14px 20px; border-bottom: 1px solid var(--border);
+  text-decoration: none; color: inherit; transition: background 0.15s;
+}
+.app-notif-item:hover { background: var(--surface-2); }
 
 .app-nav { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
 .app-nav-item {
@@ -464,12 +502,12 @@ table.app-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   .app-sidebar.collapsed .app-nav-item { justify-content: center; }
   .app-sidebar.collapsed .app-nav-item.active::before { left: -10px; }
   .app-sidebar.collapsed .app-sidebar-user { flex-direction: column; align-items: center; gap: 8px; }
+
+  .app-topbar-logo, .app-topbar-hamburger { display: none; }
 }
 
 @media (max-width: 880px) {
-  .app-shell { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-
-  .app-mobile-topbar { display: flex; }
+  .app-shell { grid-template-columns: 1fr; }
 
   .app-sidebar {
     position: fixed; top: 0; left: 0; z-index: 60;

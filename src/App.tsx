@@ -7,7 +7,10 @@ import AppShell from './layouts/AppShell';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminApplications from './pages/admin/Applications';
 import AdminTracker from './pages/admin/Tracker';
+import AdminRoadmap from './pages/admin/Roadmap';
+import AdminReminderEmail from './pages/admin/ReminderEmail';
 import ApplicantDashboard from './pages/applicant/Dashboard';
+import ApplicantChecklist from './pages/applicant/Checklist';
 import Profile from './pages/Profile';
 import './styles/theme.css';
 
@@ -35,6 +38,9 @@ export default function App() {
         <Route path="dashboard" element={role === 'admin' ? <AdminDashboard /> : <ApplicantDashboard email={user.email!} />} />
         <Route path="applications" element={role === 'admin' ? <AdminApplications /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="tracker" element={role === 'admin' ? <AdminTracker /> : <Navigate to="/app/dashboard" replace />} />
+        <Route path="roadmap" element={role === 'admin' ? <AdminRoadmap /> : <Navigate to="/app/dashboard" replace />} />
+        <Route path="reminder-email" element={role === 'admin' ? <AdminReminderEmail /> : <Navigate to="/app/dashboard" replace />} />
+        <Route path="checklist" element={role === 'admin' ? <Navigate to="/app/dashboard" replace /> : <ApplicantChecklist email={user.email!} />} />
         <Route path="profile" element={<Profile user={user} role={role} />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>

@@ -3,7 +3,7 @@ import {
   onSnapshot, query, orderBy, where,
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import type { Applicant, ApplicantFormData, ReminderStatus } from '../types';
+import type { Applicant, ApplicantFormData, ReminderStatus, ChecklistItem } from '../types';
 
 const APPLICANTS_COL = 'applicants';
 
@@ -49,4 +49,15 @@ export async function deleteApplicant(id: string): Promise<void> {
 // changed by both admin and the applicant themselves.
 export async function updateReminderStatus(id: string, reminderMailSent: ReminderStatus): Promise<void> {
   await updateDoc(doc(db, APPLICANTS_COL, id), { reminderMailSent });
+}
+
+// Whole-array replace — callers compute the new array (add/remove/toggle)
+// client-side and pass the full replacement. Usable by admin and the
+// applicant themselves (see firestore.rules).
+export async function updateChecklist(id: string, checklist: ChecklistItem[]): Promise<void> {
+  await updateDoc(doc(db, APPLICANTS_COL, id), { checklist });
+}
+
+export async function updateRoadmap(id: string, roadmap: ChecklistItem[]): Promise<void> {
+  await updateDoc(doc(db, APPLICANTS_COL, id), { roadmap });
 }

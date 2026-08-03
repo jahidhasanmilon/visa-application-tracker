@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { AlertTriangle, BellRing } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import StatCards from '../../components/StatCards';
 import StatusChart from '../../components/StatusChart';
@@ -17,11 +17,6 @@ export default function AdminDashboard() {
   const attention = enriched
     .filter(a => a.remaining <= 30 && a.status !== 'Approved' && a.status !== 'Rejected')
     .sort((a, b) => a.remaining - b.remaining)
-    .slice(0, 6);
-
-  const remindersDue = enriched
-    .filter(a => a.effectiveReminderStatus === 'Urgent')
-    .sort((a, b) => a.reminderDaysLeft - b.reminderDaysLeft)
     .slice(0, 6);
 
   if (loading) return <div className="app-loading-screen">Loading dashboard…</div>;
@@ -92,31 +87,6 @@ export default function AdminDashboard() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 12.5, fontWeight: 600, color: a.urg.color }}>
                     <span className="app-dot" style={{ background: a.urg.color }} />
                     {a.remaining > 0 ? `${a.remaining}d left (est.)` : `${Math.abs(a.remaining)}d overdue`}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="app-card app-card-pad">
-          <div className="app-card-head">
-            <div className="app-card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <BellRing size={16} color="var(--danger)" /> Reminders due
-            </div>
-            <Link to="/app/applications" className="app-card-link">Manage applications</Link>
-          </div>
-          {remindersDue.length === 0 ? (
-            <div className="app-empty">No 30-day reminders due right now.</div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
-              {remindersDue.map(a => (
-                <div key={a.id} style={{ border: '1px solid var(--danger)', background: 'var(--danger-soft)', borderRadius: 12, padding: '12px 14px' }}>
-                  <div style={{ fontWeight: 600, fontSize: 13.5 }}>{a.name}</div>
-                  <div style={{ fontSize: 11.5, color: 'var(--muted)', marginTop: 2 }}>Last updated {fmtDate(a.lastUpdated)}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 12.5, fontWeight: 600, color: 'var(--danger)' }}>
-                    <span className="app-dot" style={{ background: 'var(--danger)' }} />
-                    {a.reminderDaysLeft === 0 ? 'Due today' : `${Math.abs(a.reminderDaysLeft)}d overdue`}
                   </div>
                 </div>
               ))}

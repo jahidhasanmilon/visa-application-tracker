@@ -18,5 +18,5 @@ export const SEED_APPLICANTS: Applicant[] = [
 
 export const EMPTY_FORM: ApplicantFormData = {
   serialNo: '', name: '', email: '', status: 'Applied', created: '', submitted: '', notes: '',
-  lastUpdated: todayStr(), reminderMailSent: 'Not yet',
+  lastUpdated: todayStr(), reminderMailSent: 'Not yet', checklist: [],
 };

@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Check } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
-import { subscribeMyApplicants, updateReminderStatus } from '../../services/applicantsService';
+import { subscribeMyApplicants, updateReminderStatus, updateRoadmap } from '../../services/applicantsService';
 import { enrichApplicant, fmtDate, todayStr } from '../../utils/dateHelpers';
 import { getStatusMeta, REMINDER_OPTIONS, REMINDER_META } from '../../constants/status';
-import type { Applicant, EnrichedApplicant, ReminderStatus } from '../../types';
-
-const TIMELINE: string[] = ['Applied', 'Submitted', 'Under Review', 'Approved'];
+import { DEFAULT_ROADMAP_LABELS } from '../../constants/roadmap';
+import type { Applicant, ChecklistItem, EnrichedApplicant, ReminderStatus } from '../../types';
 
 interface ApplicantDashboardProps {
   email: string;
@@ -43,11 +42,23 @@ export default function ApplicantDashboard({ email }: ApplicantDashboardProps) {
   );
 }
 
+function countdownColors(days: number): { bg: string; color: string } {
+  if (days <= 0) return { bg: 'var(--danger-soft)', color: 'var(--danger)' };
+  if (days <= 7) return { bg: 'var(--warning-soft)', color: 'var(--warning-ink)' };
+  return { bg: 'var(--success-soft)', color: 'var(--success)' };
+}
+
 function ApplicationCard({ a }: { a: EnrichedApplicant }) {
   const meta = getStatusMeta(a.status);
   const rejected = a.status === 'Rejected';
-  const activeIndex = TIMELINE.indexOf(a.status);
   const [savingReminder, setSavingReminder] = useState(false);
+  const [savingRoadmap, setSavingRoadmap] = useState(false);
+
+  const roadmap = useMemo(() => (
+    a.roadmap && a.roadmap.length > 0
+      ? a.roadmap
+      : DEFAULT_ROADMAP_LABELS.map(label => ({ id: label, label, done: false }))
+  ), [a.roadmap]);
 
   async function handleReminderChange(value: ReminderStatus) {
     setSavingReminder(true);
@@ -58,46 +69,77 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
     }
   }
 
+  async function toggleStep(step: ChecklistItem) {
+    setSavingRoadmap(true);
+    try {
+      const next = roadmap.map(s => s.id === step.id ? { ...s, done: !s.done } : s);
+      await updateRoadmap(a.id, next);
+    } finally {
+      setSavingRoadmap(false);
+    }
+  }
+
+  const countdown = countdownColors(a.reminderDaysLeft);
+
   return (
     <div className="app-card app-card-pad">
-      <div className="app-card-head">
+      <div className="app-card-head" style={{ alignItems: 'flex-start' }}>
         <div>
           <div className="app-card-title">{a.name}</div>
           <div className="app-mono" style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}>{a.serialNo}</div>
+          <span className="app-badge" style={{ background: meta.bg, color: meta.color, fontSize: 13, padding: '6px 14px', marginTop: 10, display: 'inline-flex' }}>
+            <meta.icon size={14} /> {a.status}
+          </span>
         </div>
-        <span className="app-badge" style={{ background: meta.bg, color: meta.color, fontSize: 13, padding: '6px 14px' }}>
-          <meta.icon size={14} /> {a.status}
-        </span>
+
+        <div style={{
+          textAlign: 'center', minWidth: 96, padding: '10px 14px', borderRadius: 14,
+          background: countdown.bg, color: countdown.color, flexShrink: 0,
+        }}>
+          <div className="app-brand-font" style={{ fontWeight: 800, fontSize: 30, lineHeight: 1 }}>
+            {Math.abs(a.reminderDaysLeft)}
+          </div>
+          <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.4, marginTop: 3 }}>
+            {a.reminderDaysLeft > 0 ? 'days left' : a.reminderDaysLeft === 0 ? 'due today' : 'days overdue'}
+          </div>
+          <div style={{ fontSize: 9.5, opacity: 0.8, marginTop: 2 }}>Reminder (30-Day)</div>
+        </div>
       </div>
 
       {rejected ? (
-        <div style={{ background: 'var(--danger-soft)', color: 'var(--danger)', borderRadius: 12, padding: '14px 16px', fontSize: 13.5, fontWeight: 500 }}>
+        <div style={{ background: 'var(--danger-soft)', color: 'var(--danger)', borderRadius: 12, padding: '14px 16px', fontSize: 13.5, fontWeight: 500, marginTop: 16 }}>
           This application was not approved. Contact the team for more details.
         </div>
       ) : (
-        <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0 22px' }}>
-          {TIMELINE.map((step, i) => {
-            const done = i <= activeIndex;
-            return (
-              <div key={step} style={{ display: 'flex', alignItems: 'center', flex: i === TIMELINE.length - 1 ? '0 0 auto' : 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <div style={{
-                    width: 26, height: 26, borderRadius: '50%',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: done ? 'var(--success)' : 'var(--neutral-soft)',
-                    color: done ? '#fff' : 'var(--muted-2)',
-                    fontSize: 11, fontWeight: 700, flexShrink: 0,
-                  }}>
-                    {done ? <Check size={13} /> : i + 1}
-                  </div>
-                  <div style={{ fontSize: 10.5, color: done ? 'var(--ink)' : 'var(--muted-2)', fontWeight: done ? 600 : 500, whiteSpace: 'nowrap' }}>{step}</div>
+        <div style={{ display: 'flex', alignItems: 'center', margin: '22px 0 22px', flexWrap: 'wrap', rowGap: 18 }}>
+          {roadmap.map((step, i) => (
+            <div key={step.id} style={{ display: 'flex', alignItems: 'center', flex: i === roadmap.length - 1 ? '0 0 auto' : 1 }}>
+              <button
+                type="button"
+                onClick={() => toggleStep(step)}
+                disabled={savingRoadmap}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit',
+                }}
+                title={step.done ? 'Mark as not yet' : 'Mark as done'}
+              >
+                <div style={{
+                  width: 26, height: 26, borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: step.done ? 'var(--success)' : 'var(--neutral-soft)',
+                  color: step.done ? '#fff' : 'var(--muted-2)',
+                  fontSize: 11, fontWeight: 700, flexShrink: 0,
+                }}>
+                  {step.done ? <Check size={13} /> : i + 1}
                 </div>
-                {i < TIMELINE.length - 1 && (
-                  <div style={{ flex: 1, height: 2, background: i < activeIndex ? 'var(--success)' : 'var(--border)', margin: '0 6px 18px' }} />
-                )}
-              </div>
-            );
-          })}
+                <div style={{ fontSize: 10.5, color: step.done ? 'var(--ink)' : 'var(--muted-2)', fontWeight: step.done ? 600 : 500, whiteSpace: 'nowrap' }}>{step.label}</div>
+              </button>
+              {i < roadmap.length - 1 && (
+                <div style={{ flex: 1, height: 2, background: step.done ? 'var(--success)' : 'var(--border)', margin: '0 6px 18px' }} />
+              )}
+            </div>
+          ))}
         </div>
       )}
 

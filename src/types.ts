@@ -19,6 +19,18 @@ export interface Applicant {
   // Never set by the client — Firestore rules only allow admin/applicant to
   // touch reminderMailSent.
   reminderEmailSentAt?: string;
+  // Admin-managed per-applicant to-do list. Toggleable by both admin and applicant.
+  checklist?: ChecklistItem[];
+  // Admin-managed per-applicant progress stepper, shown at the top of the
+  // applicant's dashboard in place of the fixed Applied/Submitted/... steps.
+  // Toggleable by both admin and applicant.
+  roadmap?: ChecklistItem[];
+}
+
+export interface ChecklistItem {
+  id: string;
+  label: string;
+  done: boolean;
 }
 
 export interface EnrichedApplicant extends Applicant {
@@ -42,6 +54,7 @@ export interface ApplicantFormData {
   notes: string;
   lastUpdated: string;
   reminderMailSent: ReminderStatus;
+  checklist: ChecklistItem[];
 }
 
 export interface StatCounts {

@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, KanbanSquare, UserCircle, LogOut, PlaneTakeoff,
-  Menu, X, PanelLeftClose, PanelLeftOpen,
+  Menu, X, PanelLeftClose, PanelLeftOpen, CheckSquare, Milestone, Mail,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AppRole } from '../constants/roles';
 import { signOut } from '../services/authService';
 import ThemeToggle from '../components/ThemeToggle';
 import UserAvatar from '../components/UserAvatar';
+import NotificationBell from '../components/NotificationBell';
+import ProfileToggleButton from '../components/ProfileToggleButton';
 
 interface AppShellProps {
   user: User;
@@ -21,11 +23,14 @@ const ADMIN_NAV = [
   { to: '/app/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/app/applications', label: 'Applications', icon: Briefcase },
   { to: '/app/tracker', label: 'Tracker', icon: KanbanSquare },
+  { to: '/app/roadmap', label: 'Road to Success', icon: Milestone },
+  { to: '/app/reminder-email', label: 'Reminder Email', icon: Mail },
   { to: '/app/profile', label: 'Profile', icon: UserCircle },
 ];
 
 const APPLICANT_NAV = [
   { to: '/app/dashboard', label: 'My Status', icon: LayoutDashboard },
+  { to: '/app/checklist', label: 'Checklist', icon: CheckSquare },
   { to: '/app/profile', label: 'Profile', icon: UserCircle },
 ];
 
@@ -40,19 +45,6 @@ export default function AppShell({ user, role }: AppShellProps) {
 
   return (
     <div className={`app-root app-shell${collapsed ? ' collapsed' : ''}`}>
-      <div className="app-mobile-topbar">
-        <div className="app-logo" style={{ padding: 0 }}>
-          <div className="app-logo-mark"><PlaneTakeoff size={16} /></div>
-          <div className="app-logo-text" style={{ color: 'var(--ink)' }}>VisaTrack</div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <ThemeToggle />
-          <button className="app-icon-btn" onClick={() => setMobileNavOpen(true)} aria-label="Open menu">
-            <Menu size={20} />
-          </button>
-        </div>
-      </div>
-
       {mobileNavOpen && <div className="app-mobile-backdrop" onClick={() => setMobileNavOpen(false)} />}
 
       <aside className={`app-sidebar${mobileNavOpen ? ' mobile-open' : ''}${collapsed ? ' collapsed' : ''}`}>
@@ -116,6 +108,20 @@ export default function AppShell({ user, role }: AppShellProps) {
       </aside>
 
       <main className="app-main">
+        <div className="app-mobile-topbar">
+          <div className="app-topbar-logo app-logo" style={{ padding: 0 }}>
+            <div className="app-logo-mark"><PlaneTakeoff size={16} /></div>
+            <div className="app-logo-text" style={{ color: 'var(--ink)' }}>VisaTrack</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
+            {role === 'admin' && <NotificationBell />}
+            <ProfileToggleButton user={user} />
+            <ThemeToggle />
+            <button className="app-icon-btn app-topbar-hamburger" onClick={() => setMobileNavOpen(true)} aria-label="Open menu">
+              <Menu size={20} />
+            </button>
+          </div>
+        </div>
         <Outlet />
       </main>
     </div>

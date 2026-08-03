@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { X as XIcon } from 'lucide-react';
 import { REMINDER_OPTIONS } from '../constants/status';
-import type { ApplicantFormData, ReminderStatus, StatusOption } from '../types';
+import type { ApplicantFormData, ChecklistItem, ReminderStatus, StatusOption } from '../types';
 
 const ADD_NEW_VALUE = '__add_new__';
 
@@ -20,8 +21,25 @@ export default function ApplicantModal({
 }: ApplicantModalProps) {
   const [addingStatus, setAddingStatus] = useState(false);
   const [newStatus, setNewStatus] = useState('');
+  const [newChecklistLabel, setNewChecklistLabel] = useState('');
 
   if (!open) return null;
+
+  function addChecklistItem() {
+    const label = newChecklistLabel.trim();
+    if (!label) return;
+    const item: ChecklistItem = { id: crypto.randomUUID(), label, done: false };
+    setForm({ ...form, checklist: [...form.checklist, item] });
+    setNewChecklistLabel('');
+  }
+
+  function toggleChecklistItem(id: string) {
+    setForm({ ...form, checklist: form.checklist.map(i => i.id === id ? { ...i, done: !i.done } : i) });
+  }
+
+  function removeChecklistItem(id: string) {
+    setForm({ ...form, checklist: form.checklist.filter(i => i.id !== id) });
+  }
 
   function handleStatusChange(value: string) {
     if (value === ADD_NEW_VALUE) {
@@ -109,6 +127,46 @@ export default function ApplicantModal({
           <select className="app-select" value={form.reminderMailSent} onChange={e => setForm({ ...form, reminderMailSent: e.target.value as ReminderStatus })}>
             {REMINDER_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
+        </div>
+
+        <div className="app-field">
+          <label>Checklist</label>
+          {form.checklist.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+              {form.checklist.map(item => (
+                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid var(--border)', borderRadius: 8, padding: '6px 8px' }}>
+                  <button
+                    type="button"
+                    className="app-badge"
+                    onClick={() => toggleChecklistItem(item.id)}
+                    style={{
+                      border: 'none', cursor: 'pointer',
+                      background: item.done ? 'var(--success-soft)' : 'var(--neutral-soft)',
+                      color: item.done ? 'var(--success)' : 'var(--neutral)',
+                    }}
+                  >
+                    {item.done ? 'Done' : 'Not yet'}
+                  </button>
+                  <span style={{ flex: 1, fontSize: 13.5, textDecoration: item.done ? 'line-through' : 'none', color: item.done ? 'var(--muted)' : 'var(--ink)' }}>
+                    {item.label}
+                  </span>
+                  <button type="button" className="app-icon-btn" onClick={() => removeChecklistItem(item.id)} aria-label="Remove item">
+                    <XIcon size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              className="app-input"
+              value={newChecklistLabel}
+              onChange={e => setNewChecklistLabel(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addChecklistItem(); } }}
+              placeholder="New checklist item"
+            />
+            <button type="button" className="app-btn app-btn-ghost app-btn-sm" onClick={addChecklistItem}>Add</button>
+          </div>
         </div>
 
         <div className="app-modal-actions">

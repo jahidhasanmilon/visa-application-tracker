@@ -19,12 +19,13 @@ service cloud.firestore {
       allow create, delete: if isAdminEmail();
 
       // Staff can edit anything. An applicant may only update the
-      // "Application Reminder (30-Day)" status on their own record — nothing else.
+      // "Application Reminder (30-Day)" status, checklist, and roadmap
+      // toggle-state on their own record — nothing else.
       allow update: if isAdminEmail()
         || (
           request.auth != null
           && resource.data.email == request.auth.token.email
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reminderMailSent'])
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reminderMailSent', 'checklist', 'roadmap'])
         );
     }
 
