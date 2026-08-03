@@ -96,17 +96,15 @@ export default function AppShell({ user, role }: AppShellProps) {
                 {user.email}
               </div>
             </div>
-            <div className="app-sidebar-user-actions">
-              <ThemeToggle className="app-icon-btn" style={{ color: 'var(--sidebar-text)' }} />
-              <button
-                className="app-icon-btn"
-                style={{ color: 'var(--sidebar-text)' }}
-                title="Sign out"
-                onClick={() => signOut()}
-              >
-                <LogOut size={16} />
-              </button>
-            </div>
+            <ThemeToggle className="app-icon-btn" style={{ color: 'var(--sidebar-text)' }} />
+            <button
+              className="app-icon-btn"
+              style={{ color: 'var(--sidebar-text)' }}
+              title="Sign out"
+              onClick={() => signOut()}
+            >
+              <LogOut size={16} />
+            </button>
           </div>
         </div>
       </aside>

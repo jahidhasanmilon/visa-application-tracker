@@ -231,7 +231,6 @@ button.app-sidebar-close { display: none; }
   border-radius: 10px;
 }
 .app-sidebar-user:hover { background: rgba(255,255,255,0.05); }
-.app-sidebar-user-actions { display: flex; align-items: center; gap: 4px; }
 
 .app-main { min-width: 0; }
 .app-topbar {
@@ -523,9 +522,6 @@ table.app-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   }
   .app-sidebar.mobile-open { transform: translateX(0); }
   button.app-sidebar-close { display: inline-flex; }
-
-  .app-sidebar-user { flex-wrap: wrap; }
-  .app-sidebar-user-actions { flex: 1 1 100%; justify-content: flex-end; margin-top: 8px; }
 
   .app-auth-screen { grid-template-columns: 1fr; }
   .app-auth-art { display: none; }
