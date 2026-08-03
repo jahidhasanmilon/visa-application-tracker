@@ -15,8 +15,22 @@ service cloud.firestore {
       allow read: if isAdminEmail()
         || (request.auth != null && resource.data.email == request.auth.token.email);
 
-      // Only staff can create, edit, or delete applicant records.
-      allow write: if isAdminEmail();
+      // Only staff can create or delete applicant records.
+      allow create, delete: if isAdminEmail();
+
+      // Staff can edit anything. An applicant may only update the
+      // "Application Reminder (30-Day)" status on their own record — nothing else.
+      allow update: if isAdminEmail()
+        || (
+          request.auth != null
+          && resource.data.email == request.auth.token.email
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reminderMailSent'])
+        );
+    }
+
+    // Custom status options an admin has added beyond the built-in defaults.
+    match /meta/statusOptions {
+      allow read, write: if isAdminEmail();
     }
   }
 }

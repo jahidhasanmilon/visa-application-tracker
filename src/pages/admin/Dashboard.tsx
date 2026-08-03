@@ -4,7 +4,7 @@ import PageHeader from '../../components/PageHeader';
 import StatCards from '../../components/StatCards';
 import StatusChart from '../../components/StatusChart';
 import { useApplicants } from '../../hooks/useApplicants';
-import { STATUS_META } from '../../constants/status';
+import { getStatusMeta } from '../../constants/status';
 import { fmtDate } from '../../utils/dateHelpers';
 
 export default function AdminDashboard() {
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {recent.map(a => {
-                  const meta = STATUS_META[a.status];
+                  const meta = getStatusMeta(a.status);
                   const Icon = meta.icon;
                   return (
                     <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: '1px solid var(--border)' }}>
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
                   <div style={{ fontSize: 11.5, color: 'var(--muted)', marginTop: 2 }}>Last updated {fmtDate(a.lastUpdated)}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 12.5, fontWeight: 600, color: a.urg.color }}>
                     <span className="app-dot" style={{ background: a.urg.color }} />
-                    {a.remaining > 0 ? `${a.remaining}d left` : `${Math.abs(a.remaining)}d overdue`}
+                    {a.remaining > 0 ? `${a.remaining}d left (est.)` : `${Math.abs(a.remaining)}d overdue`}
                   </div>
                 </div>
               ))}

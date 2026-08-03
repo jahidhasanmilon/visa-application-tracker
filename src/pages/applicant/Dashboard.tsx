@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
-import { subscribeMyApplicants } from '../../services/applicantsService';
+import { subscribeMyApplicants, updateReminderStatus } from '../../services/applicantsService';
 import { enrichApplicant, fmtDate, todayStr } from '../../utils/dateHelpers';
-import { STATUS_META } from '../../constants/status';
-import type { Applicant, EnrichedApplicant } from '../../types';
+import { getStatusMeta, REMINDER_OPTIONS } from '../../constants/status';
+import type { Applicant, EnrichedApplicant, ReminderStatus } from '../../types';
 
-const TIMELINE: Applicant['status'][] = ['Applied', 'Submitted', 'Under Review', 'Approved'];
+const TIMELINE: string[] = ['Applied', 'Submitted', 'Under Review', 'Approved'];
 
 interface ApplicantDashboardProps {
   email: string;
@@ -44,9 +44,19 @@ export default function ApplicantDashboard({ email }: ApplicantDashboardProps) {
 }
 
 function ApplicationCard({ a }: { a: EnrichedApplicant }) {
-  const meta = STATUS_META[a.status];
+  const meta = getStatusMeta(a.status);
   const rejected = a.status === 'Rejected';
   const activeIndex = TIMELINE.indexOf(a.status);
+  const [savingReminder, setSavingReminder] = useState(false);
+
+  async function handleReminderChange(value: ReminderStatus) {
+    setSavingReminder(true);
+    try {
+      await updateReminderStatus(a.id, value);
+    } finally {
+      setSavingReminder(false);
+    }
+  }
 
   return (
     <div className="app-card app-card-pad">
@@ -97,9 +107,23 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
         <Field label="Waiting" value={`${a.waiting} days`} />
         <Field
           label={a.remaining > 0 ? 'Estimated remaining' : 'Status'}
-          value={a.remaining > 0 ? `${a.remaining} days` : `${Math.abs(a.remaining)}d past target`}
+          value={a.remaining > 0 ? `${a.remaining} days (est.)` : `${Math.abs(a.remaining)}d past target`}
           color={a.urg.color}
         />
+      </div>
+
+      <div style={{ paddingTop: 14, marginTop: 14, borderTop: '1px solid var(--border)' }}>
+        <div className="app-field" style={{ margin: 0, maxWidth: 240 }}>
+          <label>Application Reminder (30-Day)</label>
+          <select
+            className="app-select"
+            value={a.reminderMailSent}
+            disabled={savingReminder}
+            onChange={e => handleReminderChange(e.target.value as ReminderStatus)}
+          >
+            {REMINDER_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </div>
       </div>
     </div>
   );

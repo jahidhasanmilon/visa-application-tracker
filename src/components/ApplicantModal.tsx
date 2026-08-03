@@ -1,5 +1,8 @@
-import { STATUS_OPTIONS } from '../constants/status';
-import type { ApplicantFormData, ReminderMailStatus, StatusOption } from '../types';
+import { useState } from 'react';
+import { REMINDER_OPTIONS } from '../constants/status';
+import type { ApplicantFormData, ReminderStatus, StatusOption } from '../types';
+
+const ADD_NEW_VALUE = '__add_new__';
 
 interface ApplicantModalProps {
   open: boolean;
@@ -8,10 +11,34 @@ interface ApplicantModalProps {
   setForm: (f: ApplicantFormData) => void;
   onSave: () => void;
   onClose: () => void;
+  statusOptions: string[];
+  onAddStatus: (name: string) => Promise<void>;
 }
 
-export default function ApplicantModal({ open, isEditing, form, setForm, onSave, onClose }: ApplicantModalProps) {
+export default function ApplicantModal({
+  open, isEditing, form, setForm, onSave, onClose, statusOptions, onAddStatus,
+}: ApplicantModalProps) {
+  const [addingStatus, setAddingStatus] = useState(false);
+  const [newStatus, setNewStatus] = useState('');
+
   if (!open) return null;
+
+  function handleStatusChange(value: string) {
+    if (value === ADD_NEW_VALUE) {
+      setAddingStatus(true);
+      return;
+    }
+    setForm({ ...form, status: value as StatusOption });
+  }
+
+  async function confirmNewStatus() {
+    const name = newStatus.trim();
+    if (!name) return;
+    if (!statusOptions.includes(name)) await onAddStatus(name);
+    setForm({ ...form, status: name as StatusOption });
+    setNewStatus('');
+    setAddingStatus(false);
+  }
 
   return (
     <div className="app-modal-backdrop" onClick={onClose}>
@@ -35,9 +62,25 @@ export default function ApplicantModal({ open, isEditing, form, setForm, onSave,
 
         <div className="app-field">
           <label>Status</label>
-          <select className="app-select" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as StatusOption })}>
-            {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+          {addingStatus ? (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                className="app-input"
+                autoFocus
+                value={newStatus}
+                onChange={e => setNewStatus(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirmNewStatus(); } }}
+                placeholder="New status name"
+              />
+              <button type="button" className="app-btn app-btn-ghost app-btn-sm" onClick={confirmNewStatus}>Add</button>
+              <button type="button" className="app-btn app-btn-ghost app-btn-sm" onClick={() => { setAddingStatus(false); setNewStatus(''); }}>Cancel</button>
+            </div>
+          ) : (
+            <select className="app-select" value={form.status} onChange={e => handleStatusChange(e.target.value)}>
+              {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
+              <option value={ADD_NEW_VALUE}>+ Add new status…</option>
+            </select>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: 12 }}>
@@ -52,15 +95,19 @@ export default function ApplicantModal({ open, isEditing, form, setForm, onSave,
         </div>
 
         <div className="app-field">
+          <label>Last updated</label>
+          <input className="app-input" type="date" value={form.lastUpdated} onChange={e => setForm({ ...form, lastUpdated: e.target.value })} />
+        </div>
+
+        <div className="app-field">
           <label>Notes</label>
           <textarea className="app-textarea" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Interview feedback, contact details, etc." />
         </div>
 
         <div className="app-field">
-          <label>Reminder mail</label>
-          <select className="app-select" value={form.reminderMailSent} onChange={e => setForm({ ...form, reminderMailSent: e.target.value as ReminderMailStatus })}>
-            <option value="Not yet">Not yet</option>
-            <option value="Sent">Sent</option>
+          <label>Application Reminder (30-Day)</label>
+          <select className="app-select" value={form.reminderMailSent} onChange={e => setForm({ ...form, reminderMailSent: e.target.value as ReminderStatus })}>
+            {REMINDER_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
         </div>
 

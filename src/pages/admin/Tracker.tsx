@@ -2,12 +2,14 @@ import { useState } from 'react';
 import PageHeader from '../../components/PageHeader';
 import ApplicantModal from '../../components/ApplicantModal';
 import { useApplicants } from '../../hooks/useApplicants';
-import { STATUS_OPTIONS, STATUS_META } from '../../constants/status';
+import { useStatusOptions } from '../../hooks/useStatusOptions';
+import { getStatusMeta } from '../../constants/status';
 import { updateApplicant } from '../../services/applicantsService';
 import type { Applicant, ApplicantFormData, EnrichedApplicant } from '../../types';
 
 export default function AdminTracker() {
   const { enriched, loading } = useApplicants();
+  const { statusOptions, addStatus } = useStatusOptions();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingApplicant, setEditingApplicant] = useState<Applicant | null>(null);
@@ -16,7 +18,8 @@ export default function AdminTracker() {
   function openCard(a: EnrichedApplicant) {
     setForm({
       serialNo: a.serialNo, name: a.name, email: a.email, status: a.status,
-      created: a.created, submitted: a.submitted, notes: a.notes, reminderMailSent: a.reminderMailSent,
+      created: a.created, submitted: a.submitted, notes: a.notes,
+      lastUpdated: a.lastUpdated, reminderMailSent: a.reminderMailSent,
     });
     setEditingApplicant(a);
     setModalOpen(true);
@@ -36,8 +39,8 @@ export default function AdminTracker() {
       <PageHeader title="Tracker" subtitle="Every applicant, grouped by stage. Click a card to update it." />
       <div className="app-content">
         <div className="app-kanban">
-          {STATUS_OPTIONS.map(status => {
-            const meta = STATUS_META[status];
+          {statusOptions.map(status => {
+            const meta = getStatusMeta(status);
             const Icon = meta.icon;
             const cards = enriched.filter(a => a.status === status);
             return (
@@ -57,7 +60,7 @@ export default function AdminTracker() {
                       <div className="app-kanban-card-meta app-mono">{a.serialNo}</div>
                       <div className="app-kanban-card-meta">
                         <span className="app-dot" style={{ background: a.urg.color }} />
-                        {a.remaining > 0 ? `${a.remaining}d left` : `${Math.abs(a.remaining)}d overdue`}
+                        {a.remaining > 0 ? `${a.remaining}d left (est.)` : `${Math.abs(a.remaining)}d overdue`}
                       </div>
                     </div>
                   ))
@@ -76,6 +79,8 @@ export default function AdminTracker() {
           setForm={setForm}
           onSave={saveForm}
           onClose={() => setModalOpen(false)}
+          statusOptions={statusOptions}
+          onAddStatus={addStatus}
         />
       )}
     </>

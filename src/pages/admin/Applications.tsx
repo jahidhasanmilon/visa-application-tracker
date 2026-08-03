@@ -4,6 +4,7 @@ import Toolbar from '../../components/Toolbar';
 import ApplicantTable from '../../components/ApplicantTable';
 import ApplicantModal from '../../components/ApplicantModal';
 import { useApplicants } from '../../hooks/useApplicants';
+import { useStatusOptions } from '../../hooks/useStatusOptions';
 import { todayStr } from '../../utils/dateHelpers';
 import { addApplicant, updateApplicant, deleteApplicant } from '../../services/applicantsService';
 import { EMPTY_FORM } from '../../data/seedData';
@@ -11,6 +12,7 @@ import type { Applicant, ApplicantFormData, StatusOption, EnrichedApplicant } fr
 
 export default function AdminApplications() {
   const { enriched, loading } = useApplicants();
+  const { statusOptions, addStatus } = useStatusOptions();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusOption | 'All'>('All');
@@ -33,7 +35,7 @@ export default function AdminApplications() {
   }, [enriched, search, statusFilter]);
 
   function openAdd() {
-    setForm({ ...EMPTY_FORM, created: todayStr() });
+    setForm({ ...EMPTY_FORM, created: todayStr(), lastUpdated: todayStr() });
     setEditingApplicant(null);
     setModalOpen(true);
   }
@@ -41,7 +43,8 @@ export default function AdminApplications() {
   function openEdit(a: EnrichedApplicant) {
     setForm({
       serialNo: a.serialNo, name: a.name, email: a.email, status: a.status,
-      created: a.created, submitted: a.submitted, notes: a.notes, reminderMailSent: a.reminderMailSent,
+      created: a.created, submitted: a.submitted, notes: a.notes,
+      lastUpdated: a.lastUpdated, reminderMailSent: a.reminderMailSent,
     });
     setEditingApplicant(a);
     setModalOpen(true);
@@ -74,6 +77,7 @@ export default function AdminApplications() {
             setSearch={setSearch}
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}
+            statusOptions={statusOptions}
             onAdd={openAdd}
           />
           <ApplicantTable
@@ -94,6 +98,8 @@ export default function AdminApplications() {
         setForm={setForm}
         onSave={saveForm}
         onClose={() => setModalOpen(false)}
+        statusOptions={statusOptions}
+        onAddStatus={addStatus}
       />
     </>
   );

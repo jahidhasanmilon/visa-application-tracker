@@ -35,7 +35,7 @@ export function useApplicants() {
     const counts: Record<string, number> = {};
     STATUS_OPTIONS.forEach(s => { counts[s] = 0; });
     enriched.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
-    return STATUS_OPTIONS
+    return Object.keys(counts)
       .map(s => ({ name: s, value: counts[s] }))
       .filter(d => d.value > 0);
   }, [enriched]);

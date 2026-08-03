@@ -25,11 +25,12 @@ export default function ApplicantTable({
             <th>Serial No</th>
             <th>Name</th>
             <th>Status</th>
-            <th>Applied</th>
+            <th>Created</th>
+            <th>Submitted</th>
             <th>Waiting</th>
-            <th>Remaining</th>
+            <th title="Estimated using a 365-day target processing window">Remaining (Est.)</th>
             <th>Last Updated</th>
-            <th>Reminder Mail</th>
+            <th>Application Reminder (30-Day)</th>
             <th>Notes</th>
             <th></th>
           </tr>

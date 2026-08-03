@@ -1,5 +1,5 @@
 import { Pencil, Trash2 } from 'lucide-react';
-import { STATUS_META } from '../constants/status';
+import { getStatusMeta, REMINDER_META } from '../constants/status';
 import { fmtDate } from '../utils/dateHelpers';
 import type { EnrichedApplicant } from '../types';
 
@@ -16,8 +16,9 @@ export default function ApplicantRow({
   applicant, onEdit, onDelete, confirmingDelete, onAskDelete, onCancelDelete,
 }: ApplicantRowProps) {
   const a = applicant;
-  const meta = STATUS_META[a.status] || STATUS_META['Applied'];
+  const meta = getStatusMeta(a.status);
   const Icon = meta.icon;
+  const reminderMeta = REMINDER_META[a.reminderMailSent] || REMINDER_META['Not yet'];
 
   return (
     <tr>
@@ -32,6 +33,7 @@ export default function ApplicantRow({
         </span>
       </td>
       <td className="app-mono" style={{ fontSize: 12.5 }}>{fmtDate(a.created)}</td>
+      <td className="app-mono" style={{ fontSize: 12.5 }}>{fmtDate(a.submitted)}</td>
       <td>{a.waiting}d</td>
       <td>
         <span className="app-dot" style={{ background: a.urg.color, marginRight: 6 }} />
@@ -39,10 +41,7 @@ export default function ApplicantRow({
       </td>
       <td className="app-mono" style={{ fontSize: 12.5 }}>{fmtDate(a.lastUpdated)}</td>
       <td>
-        <span className="app-badge" style={{
-          background: a.reminderMailSent === 'Sent' ? 'var(--success-soft)' : 'var(--danger-soft)',
-          color: a.reminderMailSent === 'Sent' ? 'var(--success)' : 'var(--danger)',
-        }}>
+        <span className="app-badge" style={{ background: reminderMeta.bg, color: reminderMeta.color }}>
           {a.reminderMailSent}
         </span>
       </td>

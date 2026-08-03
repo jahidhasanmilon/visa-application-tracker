@@ -1,5 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { STATUS_META } from '../constants/status';
+import { getStatusMeta } from '../constants/status';
 import type { PieDatum } from '../types';
 
 interface StatusChartProps {
@@ -20,7 +20,7 @@ export default function StatusChart({ pieData }: StatusChartProps) {
           <PieChart>
             <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={54} outerRadius={80} paddingAngle={3} stroke="none">
               {pieData.map((d, i) => (
-                <Cell key={i} fill={STATUS_META[d.name]?.color || '#999'} />
+                <Cell key={i} fill={getStatusMeta(d.name).color} />
               ))}
             </Pie>
             <Tooltip />
@@ -34,7 +34,7 @@ export default function StatusChart({ pieData }: StatusChartProps) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minWidth: 140 }}>
         {pieData.map(d => (
           <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13 }}>
-            <span className="app-dot" style={{ background: STATUS_META[d.name]?.color }} />
+            <span className="app-dot" style={{ background: getStatusMeta(d.name).color }} />
             <span style={{ fontWeight: 600, flex: 1 }}>{d.name}</span>
             <span style={{ color: 'var(--muted)' }}>{d.value}</span>
           </div>

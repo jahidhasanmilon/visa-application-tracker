@@ -31,9 +31,11 @@ export function serialNumberValue(serialNo: string): number {
   return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
 }
 
-// Enrich a raw applicant record with computed fields (waiting/remaining days, urgency)
+// Enrich a raw applicant record with computed fields (waiting/remaining days, urgency).
+// Waiting time counts from the submitted date (not the created/applied date) —
+// remaining is an estimate against TARGET_DAYS, not a guaranteed timeline.
 export function enrichApplicant(a: Applicant, today: string = todayStr()): EnrichedApplicant {
-  const waiting = daysBetween(a.created, today);
+  const waiting = daysBetween(a.submitted, today);
   const remaining = TARGET_DAYS - waiting;
   return { ...a, waiting, remaining, urg: urgency(remaining) };
 }

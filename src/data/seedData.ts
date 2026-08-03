@@ -1,4 +1,5 @@
 import type { Applicant, ApplicantFormData } from '../types';
+import { todayStr } from '../utils/dateHelpers';
 
 export const SEED_APPLICANTS: Applicant[] = [
   { id: 'AP/260/051125/000000525', serialNo: 'AP/260/051125/000000525', name: 'Jahid', email: '', status: 'Applied', created: '2025-11-05', submitted: '2025-11-08', notes: '', lastUpdated: '2026-07-12', reminderMailSent: 'Not yet' },
@@ -16,5 +17,6 @@ export const SEED_APPLICANTS: Applicant[] = [
 ];
 
 export const EMPTY_FORM: ApplicantFormData = {
-  serialNo: '', name: '', email: '', status: 'Applied', created: '', submitted: '', notes: '', reminderMailSent: 'Not yet',
+  serialNo: '', name: '', email: '', status: 'Applied', created: '', submitted: '', notes: '',
+  lastUpdated: todayStr(), reminderMailSent: 'Not yet',
 };
