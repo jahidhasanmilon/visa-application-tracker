@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Check, Circle } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { subscribeMyApplicants, updateChecklist } from '../../services/applicantsService';
+import { DEFAULT_CHECKLIST_LABELS } from '../../constants/checklist';
 import type { Applicant, ChecklistItem } from '../../types';
 
 interface ApplicantChecklistProps {
@@ -37,7 +38,9 @@ export default function ApplicantChecklist({ email }: ApplicantChecklistProps) {
 }
 
 function ChecklistCard({ applicant }: { applicant: Applicant }) {
-  const items = applicant.checklist || [];
+  const items = applicant.checklist && applicant.checklist.length > 0
+    ? applicant.checklist
+    : DEFAULT_CHECKLIST_LABELS.map(label => ({ id: label, label, done: false }));
   const [saving, setSaving] = useState<string | null>(null);
 
   async function toggle(item: ChecklistItem) {
