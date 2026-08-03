@@ -11,6 +11,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import UserAvatar from '../components/UserAvatar';
 import NotificationBell from '../components/NotificationBell';
 import ProfileToggleButton from '../components/ProfileToggleButton';
+import { displayNameFor } from '../utils/userDisplay';
 
 interface AppShellProps {
   user: User;
@@ -89,21 +90,23 @@ export default function AppShell({ user, role }: AppShellProps) {
             <UserAvatar user={user} plain />
             <div className="app-sidebar-user-info" style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user.displayName || 'Signed in'}
+                {displayNameFor(user)}
               </div>
               <div style={{ fontSize: 11, color: 'var(--sidebar-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.email}
               </div>
             </div>
-            <ThemeToggle className="app-icon-btn" style={{ color: 'var(--sidebar-text)' }} />
-            <button
-              className="app-icon-btn"
-              style={{ color: 'var(--sidebar-text)' }}
-              title="Sign out"
-              onClick={() => signOut()}
-            >
-              <LogOut size={16} />
-            </button>
+            <div className="app-sidebar-user-actions">
+              <ThemeToggle className="app-icon-btn" style={{ color: 'var(--sidebar-text)' }} />
+              <button
+                className="app-icon-btn"
+                style={{ color: 'var(--sidebar-text)' }}
+                title="Sign out"
+                onClick={() => signOut()}
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </aside>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { User } from 'firebase/auth';
+import { displayNameFor } from '../utils/userDisplay';
 
 interface UserAvatarProps {
   user: User;
@@ -19,7 +20,7 @@ const PALETTE: { bg: string; fg: string }[] = [
 ];
 
 function initialsFor(user: User): string {
-  const source = user.displayName || user.email || '?';
+  const source = displayNameFor(user);
   const parts = source.trim().split(/\s+/);
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   return source.slice(0, 2).toUpperCase();
@@ -40,7 +41,7 @@ export default function UserAvatar({ user, size, className = '', style, plain }:
     return (
       <img
         src={user.photoURL}
-        alt={user.displayName || user.email || 'Profile photo'}
+        alt={displayNameFor(user)}
         referrerPolicy="no-referrer"
         onError={() => setPhotoFailed(true)}
         className={classes}

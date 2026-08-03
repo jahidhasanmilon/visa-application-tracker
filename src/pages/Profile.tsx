@@ -6,6 +6,7 @@ import UserAvatar from '../components/UserAvatar';
 import { useApplicants } from '../hooks/useApplicants';
 import type { AppRole } from '../constants/roles';
 import { signOut, uploadProfilePhoto } from '../services/authService';
+import { displayNameFor } from '../utils/userDisplay';
 
 interface ProfileProps {
   user: User;
@@ -72,7 +73,7 @@ export default function Profile({ user, role, onPhotoChange }: ProfileProps) {
             />
           </div>
           <div style={{ flex: 1, minWidth: 160 }}>
-            <div className="app-brand-font" style={{ fontWeight: 700, fontSize: 18 }}>{user.displayName || 'Signed-in account'}</div>
+            <div className="app-brand-font" style={{ fontWeight: 700, fontSize: 18 }}>{displayNameFor(user)}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>
               <Mail size={13} /> {user.email}
             </div>
