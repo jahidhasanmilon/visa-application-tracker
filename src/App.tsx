@@ -42,7 +42,7 @@ export default function App() {
         <Route path="roadmap" element={role === 'admin' ? <AdminRoadmap /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="reminder-email" element={role === 'admin' ? <AdminReminderEmail /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="checklist" element={role === 'admin' ? <AdminChecklist /> : <ApplicantChecklist email={user.email!} />} />
-        <Route path="profile" element={<Profile user={user} role={role} onPhotoChange={refreshUser} />} />
+        <Route path="profile" element={<Profile user={user} role={role} onUserUpdate={refreshUser} />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/app/dashboard" replace />} />

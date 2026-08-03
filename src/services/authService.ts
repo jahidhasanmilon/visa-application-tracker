@@ -33,6 +33,12 @@ export function resetPassword(email: string): Promise<void> {
   return sendPasswordResetEmail(auth, email);
 }
 
+export async function updateDisplayName(name: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not signed in.');
+  await updateProfile(user, { displayName: name });
+}
+
 export async function uploadProfilePhoto(file: File): Promise<string> {
   const user = auth.currentUser;
   if (!user) throw new Error('Not signed in.');

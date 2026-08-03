@@ -1,23 +1,28 @@
 import { useRef, useState } from 'react';
-import { ShieldCheck, UserRound, Mail, LogOut, Camera, Loader2 } from 'lucide-react';
+import { ShieldCheck, UserRound, Mail, LogOut, Camera, Loader2, Pencil, Check, X } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import PageHeader from '../components/PageHeader';
 import UserAvatar from '../components/UserAvatar';
 import { useApplicants } from '../hooks/useApplicants';
 import type { AppRole } from '../constants/roles';
-import { signOut, uploadProfilePhoto } from '../services/authService';
+import { signOut, uploadProfilePhoto, updateDisplayName } from '../services/authService';
 import { displayNameFor } from '../utils/userDisplay';
 
 interface ProfileProps {
   user: User;
   role: AppRole;
-  onPhotoChange: () => void;
+  onUserUpdate: () => void;
 }
 
-export default function Profile({ user, role, onPhotoChange }: ProfileProps) {
+export default function Profile({ user, role, onUserUpdate }: ProfileProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState('');
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -35,11 +40,36 @@ export default function Profile({ user, role, onPhotoChange }: ProfileProps) {
     setUploading(true);
     try {
       await uploadProfilePhoto(file);
-      onPhotoChange();
+      onUserUpdate();
     } catch {
       setUploadError('Upload failed. Please try again.');
     } finally {
       setUploading(false);
+    }
+  }
+
+  function startEditName() {
+    setNameInput(displayNameFor(user));
+    setNameError('');
+    setEditingName(true);
+  }
+
+  async function saveName() {
+    const trimmed = nameInput.trim();
+    if (!trimmed) {
+      setNameError('Name cannot be empty.');
+      return;
+    }
+    setSavingName(true);
+    setNameError('');
+    try {
+      await updateDisplayName(trimmed);
+      onUserUpdate();
+      setEditingName(false);
+    } catch {
+      setNameError('Could not save name. Please try again.');
+    } finally {
+      setSavingName(false);
     }
   }
 
@@ -73,7 +103,38 @@ export default function Profile({ user, role, onPhotoChange }: ProfileProps) {
             />
           </div>
           <div style={{ flex: 1, minWidth: 160 }}>
-            <div className="app-brand-font" style={{ fontWeight: 700, fontSize: 18 }}>{displayNameFor(user)}</div>
+            {editingName ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <input
+                  className="app-input"
+                  value={nameInput}
+                  onChange={e => setNameInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { e.preventDefault(); saveName(); }
+                    if (e.key === 'Escape') { e.preventDefault(); setEditingName(false); }
+                  }}
+                  disabled={savingName}
+                  autoFocus
+                  style={{ maxWidth: 220, fontSize: 15, padding: '6px 10px' }}
+                />
+                <button type="button" className="app-icon-btn" onClick={saveName} disabled={savingName} title="Save" aria-label="Save name">
+                  {savingName ? <Loader2 size={15} className="app-spin" /> : <Check size={15} />}
+                </button>
+                <button type="button" className="app-icon-btn" onClick={() => setEditingName(false)} disabled={savingName} title="Cancel" aria-label="Cancel">
+                  <X size={15} />
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="app-brand-font" style={{ fontWeight: 700, fontSize: 18 }}>{displayNameFor(user)}</div>
+                <button type="button" className="app-icon-btn" onClick={startEditName} title="Edit name" aria-label="Edit name">
+                  <Pencil size={13} />
+                </button>
+              </div>
+            )}
+            {nameError && (
+              <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 4 }}>{nameError}</div>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>
               <Mail size={13} /> {user.email}
             </div>
