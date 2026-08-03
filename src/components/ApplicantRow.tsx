@@ -18,7 +18,7 @@ export default function ApplicantRow({
   const a = applicant;
   const meta = getStatusMeta(a.status);
   const Icon = meta.icon;
-  const reminderMeta = REMINDER_META[a.reminderMailSent] || REMINDER_META['Not yet'];
+  const reminderMeta = REMINDER_META[a.effectiveReminderStatus] || REMINDER_META['Not yet'];
 
   return (
     <tr>
@@ -42,10 +42,10 @@ export default function ApplicantRow({
       <td className="app-mono" style={{ fontSize: 12.5 }}>{fmtDate(a.lastUpdated)}</td>
       <td>
         <span className="app-badge" style={{ background: reminderMeta.bg, color: reminderMeta.color, marginRight: 6 }}>
-          {a.reminderMailSent}
+          {a.effectiveReminderStatus}
         </span>
         <span style={{ fontSize: 11.5, color: a.reminderDaysLeft > 0 ? 'var(--muted)' : 'var(--danger)' }}>
-          {a.reminderDaysLeft > 0 ? `${a.reminderDaysLeft}d left` : `${Math.abs(a.reminderDaysLeft)}d overdue`}
+          {a.reminderDaysLeft > 0 ? `${a.reminderDaysLeft}d left` : a.reminderDaysLeft === 0 ? 'Due today' : `${Math.abs(a.reminderDaysLeft)}d overdue`}
         </span>
       </td>
       <td style={{ maxWidth: 160, fontSize: 12.5, color: 'var(--muted)' }}>{a.notes || '—'}</td>

@@ -39,5 +39,6 @@ export function enrichApplicant(a: Applicant, today: string = todayStr()): Enric
   const waiting = daysBetween(a.submitted, today);
   const remaining = TARGET_DAYS - waiting;
   const reminderDaysLeft = REMINDER_WINDOW_DAYS - daysBetween(a.lastUpdated, today);
-  return { ...a, waiting, remaining, urg: urgency(remaining), reminderDaysLeft };
+  const effectiveReminderStatus = a.reminderMailSent === 'Not yet' && reminderDaysLeft <= 0 ? 'Urgent' : a.reminderMailSent;
+  return { ...a, waiting, remaining, urg: urgency(remaining), reminderDaysLeft, effectiveReminderStatus };
 }

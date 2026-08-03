@@ -13,6 +13,8 @@ dist-ssr
 *.local
 .env
 seedData.local.json
+functions/lib
+functions/.env*
 
 # Editor directories and files
 .vscode/*

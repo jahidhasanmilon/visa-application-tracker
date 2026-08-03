@@ -14,6 +14,11 @@ export interface Applicant {
   notes: string;
   lastUpdated: string;  // ISO date string, set manually by admin — not derived from anything
   reminderMailSent: ReminderStatus; // "Application Reminder (30-Day)" — editable by admin and the applicant
+  // Server-only bookkeeping written by the sendReminderEmails Cloud Function
+  // (functions/src/index.ts) so it emails once per 30-day cycle, not every day.
+  // Never set by the client — Firestore rules only allow admin/applicant to
+  // touch reminderMailSent.
+  reminderEmailSentAt?: string;
 }
 
 export interface EnrichedApplicant extends Applicant {
@@ -21,6 +26,10 @@ export interface EnrichedApplicant extends Applicant {
   remaining: number;
   urg: { label: string; color: string };
   reminderDaysLeft: number; // 30 - (days since lastUpdated); negative once overdue
+  // Display-only: 'Not yet' becomes 'Urgent' once the window is up. Never
+  // overrides 'Done', and never gets written back — reminderMailSent stays
+  // whatever was explicitly chosen.
+  effectiveReminderStatus: ReminderStatus;
 }
 
 export interface ApplicantFormData {

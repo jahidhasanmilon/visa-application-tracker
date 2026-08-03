@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { subscribeMyApplicants, updateReminderStatus } from '../../services/applicantsService';
 import { enrichApplicant, fmtDate, todayStr } from '../../utils/dateHelpers';
-import { getStatusMeta, REMINDER_OPTIONS } from '../../constants/status';
+import { getStatusMeta, REMINDER_OPTIONS, REMINDER_META } from '../../constants/status';
 import type { Applicant, EnrichedApplicant, ReminderStatus } from '../../types';
 
 const TIMELINE: string[] = ['Applied', 'Submitted', 'Under Review', 'Approved'];
@@ -114,7 +114,18 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
 
       <div style={{ paddingTop: 14, marginTop: 14, borderTop: '1px solid var(--border)' }}>
         <div className="app-field" style={{ margin: 0, maxWidth: 240 }}>
-          <label>Application Reminder (30-Day)</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            Application Reminder (30-Day)
+            {a.effectiveReminderStatus !== a.reminderMailSent && (
+              <span className="app-badge" style={{
+                background: REMINDER_META[a.effectiveReminderStatus].bg,
+                color: REMINDER_META[a.effectiveReminderStatus].color,
+                textTransform: 'none', fontSize: 10.5, padding: '2px 8px',
+              }}>
+                {a.effectiveReminderStatus}
+              </span>
+            )}
+          </label>
           <select
             className="app-select"
             value={a.reminderMailSent}
@@ -124,7 +135,7 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
             {REMINDER_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
           <div style={{ fontSize: 11.5, color: a.reminderDaysLeft > 0 ? 'var(--muted)' : 'var(--danger)', marginTop: 6 }}>
-            {a.reminderDaysLeft > 0 ? `${a.reminderDaysLeft} days left in this window` : `${Math.abs(a.reminderDaysLeft)} days overdue`}
+            {a.reminderDaysLeft > 0 ? `${a.reminderDaysLeft} days left in this window` : a.reminderDaysLeft === 0 ? 'Due today' : `${Math.abs(a.reminderDaysLeft)} days overdue`}
           </div>
         </div>
       </div>
