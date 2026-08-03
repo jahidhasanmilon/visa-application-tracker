@@ -111,36 +111,37 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
           This application was not approved. Contact the team for more details.
         </div>
       ) : (
-        <div style={{ display: 'flex', alignItems: 'flex-start', margin: '22px 0 22px', flexWrap: 'wrap', rowGap: 20, columnGap: 0 }}>
+        <div
+          className="app-roadmap-track"
+          style={{ '--rm-cols': Math.max(1, Math.ceil(roadmap.length / 2)) } as React.CSSProperties}
+        >
           {roadmap.map((step, i) => (
-            <div key={step.id} style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <div key={step.id} className="app-roadmap-step">
               <button
                 type="button"
+                className="app-roadmap-step-btn"
                 onClick={() => toggleStep(step)}
                 disabled={savingRoadmap}
-                style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                  background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit',
-                  width: 76, flexShrink: 0,
-                }}
                 title={step.done ? 'Mark as not yet' : 'Mark as done'}
               >
-                <div style={{
-                  width: 26, height: 26, borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: step.done ? 'var(--success)' : 'var(--neutral-soft)',
-                  color: step.done ? '#fff' : 'var(--muted-2)',
-                  fontSize: 11, fontWeight: 700, flexShrink: 0,
-                }}>
+                <div
+                  className="app-roadmap-circle"
+                  style={{
+                    background: step.done ? 'var(--success)' : 'var(--neutral-soft)',
+                    color: step.done ? '#fff' : 'var(--muted-2)',
+                  }}
+                >
                   {step.done ? <Check size={13} /> : i + 1}
                 </div>
-                <div style={{
-                  fontSize: 10.5, color: step.done ? 'var(--ink)' : 'var(--muted-2)', fontWeight: step.done ? 600 : 500,
-                  textAlign: 'center', lineHeight: 1.25, overflowWrap: 'break-word',
-                }}>{step.label}</div>
+                <div
+                  className="app-roadmap-label"
+                  style={{ color: step.done ? 'var(--ink)' : 'var(--muted-2)', fontWeight: step.done ? 600 : 500 }}
+                >
+                  {step.label}
+                </div>
               </button>
               {i < roadmap.length - 1 && (
-                <div style={{ flex: '1 1 28px', minWidth: 20, maxWidth: 60, height: 2, background: step.done ? 'var(--success)' : 'var(--border)', margin: '12px 4px 0' }} />
+                <div className="app-roadmap-connector" style={{ background: step.done ? 'var(--success)' : 'var(--border)' }} />
               )}
             </div>
           ))}

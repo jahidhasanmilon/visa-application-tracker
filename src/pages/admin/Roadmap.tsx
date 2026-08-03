@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, Plus, X, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, Plus, X, ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { useApplicants } from '../../hooks/useApplicants';
 import { updateRoadmap } from '../../services/applicantsService';
@@ -10,6 +10,7 @@ export default function AdminRoadmap() {
   const { enriched, loading } = useApplicants();
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [resettingAll, setResettingAll] = useState(false);
 
   const filtered = enriched.filter(a => {
     const q = search.trim().toLowerCase();
@@ -17,6 +18,19 @@ export default function AdminRoadmap() {
   });
 
   const selected = enriched.find(a => a.id === selectedId) || null;
+  const customizedCount = enriched.filter(a => a.roadmap && a.roadmap.length > 0).length;
+
+  async function resetAllToDefault() {
+    if (!confirm(`Reset all ${customizedCount} customized applicant(s) back to the default ${DEFAULT_ROADMAP_LABELS.length}-step roadmap? This removes their custom steps.`)) return;
+    setResettingAll(true);
+    try {
+      await Promise.all(
+        enriched.filter(a => a.roadmap && a.roadmap.length > 0).map(a => updateRoadmap(a.id, []))
+      );
+    } finally {
+      setResettingAll(false);
+    }
+  }
 
   if (loading) return <div className="app-loading-screen">Loading applicants…</div>;
 
@@ -24,6 +38,16 @@ export default function AdminRoadmap() {
     <>
       <PageHeader title="Road to Success" subtitle="Customize each applicant's progress stepper." />
       <div className="app-content">
+        {customizedCount > 0 && (
+          <div className="app-card app-card-pad" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+              {customizedCount} applicant{customizedCount > 1 ? 's have' : ' has'} a customized roadmap.
+            </div>
+            <button type="button" className="app-btn app-btn-ghost app-btn-sm" onClick={resetAllToDefault} disabled={resettingAll}>
+              <RotateCcw size={14} /> Reset all to default
+            </button>
+          </div>
+        )}
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 300px) 1fr', gap: 20, alignItems: 'start' }}>
           <div className="app-card app-card-pad">
             <div className="app-input-wrap" style={{ marginBottom: 14 }}>
@@ -108,6 +132,13 @@ function RoadmapEditor({ applicant }: { applicant: EnrichedApplicant }) {
     save(next);
   }
 
+  const isCustomized = !!(applicant.roadmap && applicant.roadmap.length > 0);
+
+  function resetToDefault() {
+    if (!confirm(`Reset ${applicant.name}'s roadmap back to the default ${DEFAULT_ROADMAP_LABELS.length} steps? This removes their custom steps.`)) return;
+    save([]);
+  }
+
   return (
     <div>
       <div className="app-card-head">
@@ -115,6 +146,11 @@ function RoadmapEditor({ applicant }: { applicant: EnrichedApplicant }) {
           <div className="app-card-title">{applicant.name}</div>
           <div className="app-mono" style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}>{applicant.serialNo}</div>
         </div>
+        {isCustomized && (
+          <button type="button" className="app-btn app-btn-ghost app-btn-sm" onClick={resetToDefault} disabled={saving}>
+            <RotateCcw size={14} /> Reset to default
+          </button>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
