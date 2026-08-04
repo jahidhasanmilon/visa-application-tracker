@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { PlaneTakeoff } from 'lucide-react';
 import { useAuth } from './hooks/useAuth';
 import LoginGate from './pages/auth/LoginGate';
 import AdminLogin from './pages/auth/AdminLogin';
@@ -8,6 +9,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminApplications from './pages/admin/Applications';
 import AdminTracker from './pages/admin/Tracker';
 import AdminRoadmap from './pages/admin/Roadmap';
+import AdminAnalytics from './pages/admin/Analytics';
 import AdminReminderEmail from './pages/admin/ReminderEmail';
 import AdminChecklist from './pages/admin/Checklist';
 import ApplicantDashboard from './pages/applicant/Dashboard';
@@ -19,7 +21,11 @@ export default function App() {
   const { user, role, authLoading, refreshUser } = useAuth();
 
   if (authLoading) {
-    return <div className="app-loading-screen">Loading…</div>;
+    return (
+      <div className="app-loading-screen">
+        <PlaneTakeoff className="app-spin" size={28} />
+      </div>
+    );
   }
 
   if (!user || !role) {
@@ -41,6 +47,7 @@ export default function App() {
         <Route path="tracker" element={role === 'admin' ? <AdminTracker /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="roadmap" element={role === 'admin' ? <AdminRoadmap /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="reminder-email" element={role === 'admin' ? <AdminReminderEmail /> : <Navigate to="/app/dashboard" replace />} />
+        <Route path="analytics" element={role === 'admin' ? <AdminAnalytics /> : <Navigate to="/app/dashboard" replace />} />
         <Route path="checklist" element={role === 'admin' ? <AdminChecklist /> : <ApplicantChecklist email={user.email!} />} />
         <Route path="profile" element={<Profile user={user} role={role} onUserUpdate={refreshUser} />} />
         <Route index element={<Navigate to="dashboard" replace />} />

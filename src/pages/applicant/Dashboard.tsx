@@ -5,6 +5,8 @@ import { subscribeMyApplicants, updateReminderStatus, updateRoadmap } from '../.
 import { enrichApplicant, fmtDate, todayStr } from '../../utils/dateHelpers';
 import { getStatusMeta, REMINDER_OPTIONS, REMINDER_META } from '../../constants/status';
 import { DEFAULT_ROADMAP_LABELS } from '../../constants/roadmap';
+import { DEFAULT_CHECKLIST_LABELS } from '../../constants/checklist';
+import { CardListSkeleton } from '../../components/Skeleton';
 import type { Applicant, ChecklistItem, EnrichedApplicant, ReminderStatus } from '../../types';
 
 interface ApplicantDashboardProps {
@@ -26,7 +28,7 @@ export default function ApplicantDashboard({ email }: ApplicantDashboardProps) {
       <PageHeader title="My Status" subtitle="Live progress on your visa application." />
       <div className="app-content">
         {applicants === null ? (
-          <div className="app-loading-screen" style={{ minHeight: 200 }}>Loading your application…</div>
+          <CardListSkeleton variant="application" />
         ) : enriched.length === 0 ? (
           <div className="app-card app-card-pad">
             <div className="app-empty">
@@ -59,6 +61,16 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
       ? a.roadmap
       : DEFAULT_ROADMAP_LABELS.map(label => ({ id: label, label, done: false }))
   ), [a.roadmap]);
+
+  const checklist = useMemo(() => (
+    a.checklist && a.checklist.length > 0
+      ? a.checklist
+      : DEFAULT_CHECKLIST_LABELS.map(label => ({ id: label, label, done: false }))
+  ), [a.checklist]);
+
+  const totalDone = roadmap.filter(s => s.done).length + checklist.filter(i => i.done).length;
+  const totalItems = roadmap.length + checklist.length;
+  const progressPct = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 0;
 
   async function handleReminderChange(value: ReminderStatus) {
     setSavingReminder(true);
@@ -105,6 +117,8 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
           <div style={{ fontSize: 9.5, opacity: 0.8, marginTop: 2 }}>Reminder (30-Day)</div>
         </div>
       </div>
+
+      <ProgressBar pct={progressPct} />
 
       {rejected ? (
         <div style={{ background: 'var(--danger-soft)', color: 'var(--danger)', borderRadius: 12, padding: '14px 16px', fontSize: 13.5, fontWeight: 500, marginTop: 16 }}>
@@ -185,6 +199,20 @@ function ApplicationCard({ a }: { a: EnrichedApplicant }) {
             {a.reminderDaysLeft > 0 ? `${a.reminderDaysLeft} days left in this window` : a.reminderDaysLeft === 0 ? 'Due today' : `${Math.abs(a.reminderDaysLeft)} days overdue`}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ProgressBar({ pct }: { pct: number }) {
+  return (
+    <div style={{ marginTop: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--muted)', marginBottom: 6 }}>
+        <span>Overall progress</span>
+        <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{pct}%</span>
+      </div>
+      <div style={{ height: 8, borderRadius: 999, background: 'var(--neutral-soft)', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${pct}%`, borderRadius: 999, background: 'var(--success)', transition: 'width 0.3s ease' }} />
       </div>
     </div>
   );

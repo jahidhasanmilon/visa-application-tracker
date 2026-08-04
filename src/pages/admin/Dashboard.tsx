@@ -3,6 +3,7 @@ import { AlertTriangle } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import StatCards from '../../components/StatCards';
 import StatusChart from '../../components/StatusChart';
+import { DashboardSkeleton } from '../../components/Skeleton';
 import { useApplicants } from '../../hooks/useApplicants';
 import { getStatusMeta } from '../../constants/status';
 import { fmtDate } from '../../utils/dateHelpers';
@@ -19,7 +20,18 @@ export default function AdminDashboard() {
     .sort((a, b) => a.remaining - b.remaining)
     .slice(0, 6);
 
-  if (loading) return <div className="app-loading-screen">Loading dashboard…</div>;
+  if (loading) {
+    return (
+      <>
+        <PageHeader
+          title="Dashboard"
+          subtitle="Here's where every case stands right now."
+          actions={<Link to="/app/applications" className="app-btn app-btn-accent">Manage applications</Link>}
+        />
+        <DashboardSkeleton />
+      </>
+    );
+  }
 
   return (
     <>

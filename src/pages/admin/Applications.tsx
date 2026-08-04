@@ -3,6 +3,7 @@ import PageHeader from '../../components/PageHeader';
 import Toolbar from '../../components/Toolbar';
 import ApplicantTable from '../../components/ApplicantTable';
 import ApplicantModal from '../../components/ApplicantModal';
+import { TableSkeleton } from '../../components/Skeleton';
 import { useApplicants } from '../../hooks/useApplicants';
 import { useStatusOptions } from '../../hooks/useStatusOptions';
 import { todayStr } from '../../utils/dateHelpers';
@@ -65,7 +66,14 @@ export default function AdminApplications() {
     setConfirmDeleteId(null);
   }
 
-  if (loading) return <div className="app-loading-screen">Loading applications…</div>;
+  if (loading) {
+    return (
+      <>
+        <PageHeader title="Applications" subtitle="Loading…" />
+        <TableSkeleton />
+      </>
+    );
+  }
 
   return (
     <>

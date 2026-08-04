@@ -4,6 +4,7 @@ import PageHeader from '../../components/PageHeader';
 import { useApplicants } from '../../hooks/useApplicants';
 import { updateRoadmap } from '../../services/applicantsService';
 import { DEFAULT_ROADMAP_LABELS } from '../../constants/roadmap';
+import { ListDetailSkeleton } from '../../components/Skeleton';
 import type { ChecklistItem, EnrichedApplicant } from '../../types';
 
 export default function AdminRoadmap() {
@@ -32,7 +33,14 @@ export default function AdminRoadmap() {
     }
   }
 
-  if (loading) return <div className="app-loading-screen">Loading applicants…</div>;
+  if (loading) {
+    return (
+      <>
+        <PageHeader title="Road to Success" subtitle="Customize each applicant's progress stepper." />
+        <ListDetailSkeleton />
+      </>
+    );
+  }
 
   return (
     <>

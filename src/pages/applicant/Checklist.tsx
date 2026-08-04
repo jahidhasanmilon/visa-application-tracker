@@ -3,6 +3,7 @@ import { Check, Circle } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { subscribeMyApplicants, updateChecklist } from '../../services/applicantsService';
 import { DEFAULT_CHECKLIST_LABELS } from '../../constants/checklist';
+import { CardListSkeleton } from '../../components/Skeleton';
 import type { Applicant, ChecklistItem } from '../../types';
 
 interface ApplicantChecklistProps {
@@ -22,7 +23,7 @@ export default function ApplicantChecklist({ email }: ApplicantChecklistProps) {
       <PageHeader title="Checklist" subtitle="Tasks your case officer has set for your application." />
       <div className="app-content">
         {applicants === null ? (
-          <div className="app-loading-screen" style={{ minHeight: 200 }}>Loading your checklist…</div>
+          <CardListSkeleton variant="checklist" />
         ) : applicants.length === 0 ? (
           <div className="app-card app-card-pad">
             <div className="app-empty">

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, KanbanSquare, UserCircle, LogOut, PlaneTakeoff,
-  Menu, X, PanelLeftClose, PanelLeftOpen, CheckSquare, Milestone, Mail,
+  Menu, X, PanelLeftClose, PanelLeftOpen, CheckSquare, Milestone, Mail, BarChart3,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AppRole } from '../constants/roles';
@@ -27,6 +27,7 @@ const ADMIN_NAV = [
   { to: '/app/checklist', label: 'Checklist', icon: CheckSquare },
   { to: '/app/roadmap', label: 'Road to Success', icon: Milestone },
   { to: '/app/reminder-email', label: 'Reminder Email', icon: Mail },
+  { to: '/app/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/app/profile', label: 'Profile', icon: UserCircle },
 ];
 

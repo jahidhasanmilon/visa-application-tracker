@@ -4,6 +4,7 @@ import PageHeader from '../../components/PageHeader';
 import { useApplicants } from '../../hooks/useApplicants';
 import { updateChecklist } from '../../services/applicantsService';
 import { DEFAULT_CHECKLIST_LABELS } from '../../constants/checklist';
+import { ListDetailSkeleton } from '../../components/Skeleton';
 import type { ChecklistItem, EnrichedApplicant } from '../../types';
 
 export default function AdminChecklist() {
@@ -32,7 +33,14 @@ export default function AdminChecklist() {
     }
   }
 
-  if (loading) return <div className="app-loading-screen">Loading applicants…</div>;
+  if (loading) {
+    return (
+      <>
+        <PageHeader title="Checklist" subtitle="Customize each applicant's task checklist." />
+        <ListDetailSkeleton />
+      </>
+    );
+  }
 
   return (
     <>

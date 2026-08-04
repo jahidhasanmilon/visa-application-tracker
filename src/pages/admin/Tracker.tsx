@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PageHeader from '../../components/PageHeader';
 import ApplicantModal from '../../components/ApplicantModal';
+import { KanbanSkeleton } from '../../components/Skeleton';
 import { useApplicants } from '../../hooks/useApplicants';
 import { useStatusOptions } from '../../hooks/useStatusOptions';
 import { getStatusMeta } from '../../constants/status';
@@ -32,7 +33,14 @@ export default function AdminTracker() {
     setModalOpen(false);
   }
 
-  if (loading) return <div className="app-loading-screen">Loading tracker…</div>;
+  if (loading) {
+    return (
+      <>
+        <PageHeader title="Tracker" subtitle="Every applicant, grouped by stage. Click a card to update it." />
+        <KanbanSkeleton />
+      </>
+    );
+  }
 
   return (
     <>

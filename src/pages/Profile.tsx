@@ -3,6 +3,7 @@ import { ShieldCheck, UserRound, Mail, LogOut, Camera, Loader2, Pencil, Check, X
 import type { User } from 'firebase/auth';
 import PageHeader from '../components/PageHeader';
 import UserAvatar from '../components/UserAvatar';
+import SummaryStat from '../components/SummaryStat';
 import { useApplicants } from '../hooks/useApplicants';
 import type { AppRole } from '../constants/roles';
 import { signOut, uploadProfilePhoto, updateDisplayName } from '../services/authService';
@@ -184,15 +185,6 @@ function ApplicantSummary({ email }: { email: string | null }) {
         Your dashboard shows the applicant record on file with the email address <strong style={{ color: 'var(--ink)' }}>{email}</strong>.
         If your status looks out of date, reach out to the team that filed your application — only admin can make changes here.
       </p>
-    </div>
-  );
-}
-
-function SummaryStat({ label, value }: { label: string; value: number }) {
-  return (
-    <div>
-      <div className="app-brand-font" style={{ fontWeight: 700, fontSize: 26 }}>{value}</div>
-      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{label}</div>
     </div>
   );
 }
